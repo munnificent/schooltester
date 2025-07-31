@@ -9,9 +9,9 @@ import { Course, PaginatedResponse } from '../types';
 import { DataTable, ColumnDef } from '../components/admin/DataTable';
 
 // TODO: Заменить на импорты обновленных модальных окон
-// import { CourseFormModal } from '../components/admin/modals/CourseFormModal';
-// import { DeleteConfirmationModal } from '../components/admin/modals/DeleteConfirmationModal';
-// import { LessonManagementModal } from '../components/admin/modals/LessonManagementModal';
+import { CourseFormModal } from '../components/admin/modals/CourseFormModal';
+import { DeleteConfirmationModal } from '../components/admin/modals/DeleteConfirmationModal';
+import { LessonManagementModal } from '../components/admin/modals/LessonManagementModal';
 
 
 // --- Основной компонент страницы ---
@@ -26,6 +26,7 @@ const AdminCoursesPage: React.FC = () => {
     const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const debouncedSearch = useDebounce(searchQuery, 400);
 
@@ -63,17 +64,19 @@ const AdminCoursesPage: React.FC = () => {
         setIsDeleteModalOpen(true);
     };
     const confirmDelete = async () => {
-        if (!selectedCourse) return;
-        const toastId = toast.loading('Удаление курса...');
-        try {
-            await apiClient.delete(`/courses/${selectedCourse.id}/`);
-            toast.success(`Курс "${selectedCourse.title}" удален.`, { id: toastId });
-            fetchCourses();
-            setIsDeleteModalOpen(false);
-        } catch (error) {
-            toast.error("Не удалось удалить курс.", { id: toastId });
-        }
-    };
+  setIsDeleting(true);
+  try {
+    await apiClient.delete(`/courses/${selectedCourse?.id}/`);
+    toast.success('Курс удален');
+    fetchCourses(); 
+    setIsDeleteModalOpen(false);
+  } catch (err) {
+    toast.error('Ошибка при удалении');
+  } finally {
+    setIsDeleting(false);
+  }
+};
+
 
     // --- Определение колонок для таблицы ---
     const columns = useMemo<ColumnDef<Course>[]>(() => [
@@ -135,10 +138,29 @@ const AdminCoursesPage: React.FC = () => {
                 />
             </div>
 
-            {/* TODO: Заменить на обновленные модальные окна */}
-            {/* <CourseFormModal isOpen={isCourseModalOpen} onClose={() => setIsCourseModalOpen(false)} onSuccess={fetchCourses} currentCourse={selectedCourse} /> */}
-            {/* <DeleteConfirmationModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={confirmDelete} itemName={selectedCourse?.title || ''} /> */}
-            {/* <LessonManagementModal isOpen={isLessonModalOpen} onClose={() => setIsLessonModalOpen(false)} course={selectedCourse} /> */}
+            {/* Модальные окна управления курсами */}
+            <CourseFormModal
+            isOpen={isCourseModalOpen}
+            onClose={() => setIsCourseModalOpen(false)}
+            onSuccess={fetchCourses}
+            currentCourse={selectedCourse}
+            />
+
+            <DeleteConfirmationModal
+  isOpen={isDeleteModalOpen}
+  onClose={() => setIsDeleteModalOpen(false)}
+  onConfirm={confirmDelete}
+  itemName={selectedCourse?.title || ''}
+  isDeleting={isDeleting}
+/>
+
+
+            <LessonManagementModal
+            isOpen={isLessonModalOpen}
+            onClose={() => setIsLessonModalOpen(false)}
+            course={selectedCourse}
+            />
+
         </motion.div>
     );
 };

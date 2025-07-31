@@ -71,14 +71,14 @@ export const DataTable = <T extends { id: React.Key }>({
   }
 
   // Сообщение, если данных нет
-  if (data.length === 0) {
-    return (
-        <div className="text-center py-16 bg-muted/50 rounded-md">
-            <p className="font-medium text-foreground">Данные не найдены</p>
-            <p className="text-sm text-muted-foreground mt-1">Попробуйте изменить фильтры или поисковый запрос.</p>
-        </div>
-    );
-  }
+  if (!Array.isArray(data) || data.length === 0) {
+  return (
+    <div className="text-center py-16 bg-muted/50 rounded-md">
+      <p className="font-medium text-foreground">Данные не найдены</p>
+      <p className="text-sm text-muted-foreground mt-1">Попробуйте изменить фильтры или поисковый запрос.</p>
+    </div>
+  );
+}
 
   return (
     <div className="overflow-x-auto border rounded-lg">

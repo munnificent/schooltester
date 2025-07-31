@@ -1,3 +1,4 @@
+// src/types/index.ts
 /*
   Примечание о стиле кода:
   В коде TypeScript/Frontend мы используем стиль camelCase (например, `firstName`).

@@ -29,13 +29,29 @@ const SectionHeader: React.FC<{ title: string; subtitle: string; className?: str
 
 
 // --- Page Sections ---
-
-const PricingSection: React.FC<{ onSelectPlan: () => void }> = () => {
-  // TODO: Заменить на данные с API
+const PricingSection: React.FC<{ onSelectPlan: () => void }> = ({ onSelectPlan }) => {
   const packages = [
-    { name: "Базовый", description: "Для точечной помощи по одному предмету.", price: "15 000", features: ["1 предмет", "4 занятия в месяц", "Доступ к записям уроков", "Домашние задания"], popular: false },
-    { name: "Стандарт", description: "Лучший баланс для комплексной подготовки.", price: "25 000", features: ["До 2 предметов", "8 занятий в месяц", "Пробные тесты", "Консультации с методистом"], popular: true },
-    { name: "Премиум", description: "Максимальный фокус для гарантированного результата.", price: "45 000", features: ["До 3 предметов", "12 занятий в месяц", "Индивидуальные консультации", "Приоритетная поддержка"], popular: false },
+    {
+      name: "Базовый",
+      description: "Для точечной помощи по одному предмету.",
+      price: "15 000",
+      features: ["1 предмет", "4 занятия в месяц", "Доступ к записям уроков", "Домашние задания"],
+      popular: false
+    },
+    {
+      name: "Стандарт",
+      description: "Лучший баланс для комплексной подготовки.",
+      price: "25 000",
+      features: ["До 2 предметов", "8 занятий в месяц", "Пробные тесты", "Консультации с методистом"],
+      popular: true
+    },
+    {
+      name: "Премиум",
+      description: "Максимальный фокус для гарантированного результата.",
+      price: "45 000",
+      features: ["До 3 предметов", "12 занятий в месяц", "Индивидуальные консультации", "Приоритетная поддержка"],
+      popular: false
+    }
   ];
 
   return (
@@ -44,7 +60,11 @@ const PricingSection: React.FC<{ onSelectPlan: () => void }> = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
         {packages.map((pkg) => (
           <div key={pkg.name} className={`rounded-xl border shadow-sm flex flex-col p-6 ${pkg.popular ? 'border-2 border-primary bg-card relative' : 'bg-card'}`}>
-            {pkg.popular && <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 px-3 py-1 text-sm font-medium text-primary-foreground bg-primary rounded-full">Популярный выбор</div>}
+            {pkg.popular && (
+              <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 px-3 py-1 text-sm font-medium text-primary-foreground bg-primary rounded-full">
+                Популярный выбор
+              </div>
+            )}
             <h3 className="text-xl font-bold">{pkg.name}</h3>
             <p className="text-muted-foreground mt-2">{pkg.description}</p>
             <div className="my-6">
@@ -52,7 +72,12 @@ const PricingSection: React.FC<{ onSelectPlan: () => void }> = () => {
               <span className="text-muted-foreground"> тг/месяц</span>
             </div>
             <ul className="space-y-3 mb-8 text-sm">
-              {pkg.features.map(f => <li key={f} className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-success"/>{f}</li>)}
+              {pkg.features.map((f) => (
+                <li key={f} className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-success" />
+                  {f}
+                </li>
+              ))}
             </ul>
             <button
               onClick={onSelectPlan}

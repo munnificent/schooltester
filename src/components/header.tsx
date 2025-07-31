@@ -1,3 +1,4 @@
+//src/components/header.tsx
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -6,7 +7,7 @@ import { Menu, X, ArrowRight } from 'lucide-react';
 const navLinks = [
   { href: '/', label: 'Главная' },
   { href: '/courses', label: 'Курсы' },
-  { href: '/about-us', label: 'О нас' },
+  { href: '/about-us', label: 'О нас' }, // файл src/pages/about-us.tsx
   { href: '/blog', label: 'Блог' },
 ];
 

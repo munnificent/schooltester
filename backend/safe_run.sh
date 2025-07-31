@@ -17,4 +17,4 @@ fuser -k "${PORT}/tcp" 2>/dev/null
 #    Запускаем Django-сервер на хосте ${HOST}, чтобы он был доступен
 #    всей локальной сети, а не только с этого компьютера.
 echo "Запускаем Django-сервер на http://${HOST}:${PORT}"
-python manage.py runserver "${HOST}:${PORT}"
+python3 manage.py runserver "${HOST}:${PORT}"

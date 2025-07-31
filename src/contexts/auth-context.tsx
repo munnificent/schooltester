@@ -93,21 +93,24 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     fetchUser();
   }, [fetchUser]);
 
-  const login = async (email: string, password: string): Promise<User> => {
-    try {
-      const { data: tokenData } = await apiClient.post('/token/', { email, password });
-      tokenService.set(tokenData.access, tokenData.refresh);
-      setAuthorizationHeader(tokenData.access);
-      
-      const { data: userData } = await apiClient.get<User>('/users/me/');
-      setAuthState({ isAuthenticated: true, user: userData, isLoading: false });
-      return userData;
-    } catch (error) {
-      // Пробрасываем ошибку дальше, чтобы компонент LoginPage мог ее поймать
-      console.error("Ошибка входа:", error);
-      throw error;
-    }
-  };
+const login = async (email: string, password: string): Promise<User> => {
+  try {
+    const { data: tokenData } = await apiClient.post('/token/', {
+      username: email,  // ✅ Поменяй здесь!
+      password,
+    });
+    tokenService.set(tokenData.access, tokenData.refresh);
+    setAuthorizationHeader(tokenData.access);
+    
+    const { data: userData } = await apiClient.get<User>('/users/me/');
+    setAuthState({ isAuthenticated: true, user: userData, isLoading: false });
+    return userData;
+  } catch (error) {
+    console.error("Ошибка входа:", error);
+    throw error;
+  }
+};
+
   
   const contextValue = useMemo(() => ({
     ...authState,

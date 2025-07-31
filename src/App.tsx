@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+// src/App.tsx
+import React from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -6,35 +7,34 @@ import {
   Outlet,
   useLocation,
 } from 'react-router-dom';
-import { useAuth } from './contexts/auth-context';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from './contexts/auth-context';
 
-// --- Импорт Layouts (Оберток страниц) ---
+// --- Layouts ---
 import DashboardLayout from './components/layouts/DashboardLayout';
 import PublicLayout from './components/layouts/PublicLayout';
 
-// --- Импорт всех страниц приложения ---
-// Публичные страницы
+// --- Публичные страницы ---
 import LandingPage from './pages/landing-page';
-// import AboutUsPage from './pages/about-us'; // TODO: Создать или раскомментировать
+import AboutUsPage from './pages/about-us'; 
 import CoursesPage from './pages/courses';
 import BlogIndexPage from './pages/blog/index';
 import BlogDetailPage from './pages/blog/blog-detail';
 import LoginPage from './pages/login';
 import NotFoundPage from './pages/not-found';
 
-// Страницы Студента
+// --- Страницы студентов ---
 import StudentDashboard from './pages/dashboard';
 import MyCoursesPage from './pages/my-courses';
 import CourseDetailPage from './pages/course-detail';
 import StudentProfilePage from './pages/profile';
 import TestSimulatorPage from './pages/test-simulator';
 
-// Страницы Преподавателя (пока заглушки)
-// import TeacherDashboard from './pages/teacher-dashboard';
-// import TeacherStudentsPage from './pages/teacher-students';
+// --- Страницы преподавателя ---
+import TeacherDashboard from './pages/teacher-dashboard';
+import TeacherStudentsPage from './pages/teacher-students';
 
-// Страницы Администратора
+// --- Страницы администратора ---
 import AdminDashboard from './pages/admin-dashboard';
 import AdminUsersPage from './pages/admin-users';
 import AdminCoursesPage from './pages/admin-courses';
@@ -42,67 +42,65 @@ import AdminRequestsPage from './pages/admin-requests';
 import AdminSettingsPage from './pages/admin-settings';
 import AdminStudentsPage from './pages/admin-students';
 
+// --- Страница ошибки ---
+import ErrorPage from './pages/ErrorPage';
 
-/**
- * Компонент для защиты роутов.
- * 1. Проверяет, авторизован ли пользователь.
- * 2. Если нет - перенаправляет на /login.
- * 3. Проверяет, соответствует ли роль пользователя разрешенным ролям.
- * 4. Если роль не подходит - перенаправляет на страницу по умолчанию для этой роли.
- */
+// --- Компонент защищенного маршрута ---
 const ProtectedRoute: React.FC<{ allowedRoles: string[] }> = ({ allowedRoles }) => {
   const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
 
-  // Пока идет проверка авторизации, показываем спиннер
   if (isLoading) {
     return (
-        <div className="flex h-screen w-full items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
     );
   }
 
-  // Если пользователь не авторизован, отправляем на логин
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Если роль пользователя не входит в список разрешенных, перенаправляем
-  const userHasRequiredRole = user && allowedRoles.includes(user.role);
-  if (!userHasRequiredRole) {
-    const homePath = user?.role === 'admin' ? '/admin/dashboard' : user?.role === 'teacher' ? '/teacher/dashboard' : '/dashboard';
-    return <Navigate to={homePath} replace />;
+  const hasRole = user && allowedRoles.includes(user.role);
+  if (!hasRole) {
+    const fallbackPath =
+      user?.role === 'admin'
+        ? '/admin/dashboard'
+        : user?.role === 'teacher'
+        ? '/teacher/dashboard'
+        : '/dashboard';
+    return <Navigate to={fallbackPath} replace />;
   }
 
-  // Если все проверки пройдены, рендерим дочерний роут
   return <Outlet />;
 };
 
-
-// --- Конфигурация всех роутов приложения ---
+// --- Основной маршрутизатор ---
 const router = createBrowserRouter([
-  // --- Публичные роуты ---
+  // Публичные страницы
   {
     element: <PublicLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { path: '/', element: <LandingPage /> },
-      // { path: '/about-us', element: <AboutUsPage /> },
+      { path: '/about-us', element: <AboutUsPage /> },
       { path: '/courses', element: <CoursesPage /> },
       { path: '/blog', element: <BlogIndexPage /> },
       { path: '/blog/:slug', element: <BlogDetailPage /> },
     ],
   },
 
-  // --- Страница входа ---
+  // Страница входа
   {
     path: '/login',
     element: <LoginPage />,
   },
 
-  // --- Роуты для Студента ---
+  // Роуты студента
   {
     element: <ProtectedRoute allowedRoles={['student']} />,
+    errorElement: <ErrorPage />,
     children: [
       {
         element: <DashboardLayout />,
@@ -116,16 +114,16 @@ const router = createBrowserRouter([
       },
     ],
   },
-  
-  // --- Роуты для Администратора ---
+
+  // Роуты администратора
   {
-    path: '/admin', // Группируем все админские роуты
+    path: '/admin',
     element: <ProtectedRoute allowedRoles={['admin']} />,
+    errorElement: <ErrorPage />,
     children: [
       {
         element: <DashboardLayout />,
         children: [
-          // Редирект с /admin на /admin/dashboard
           { index: true, element: <Navigate to="/admin/dashboard" replace /> },
           { path: 'dashboard', element: <AdminDashboard /> },
           { path: 'users', element: <AdminUsersPage /> },
@@ -138,14 +136,31 @@ const router = createBrowserRouter([
     ],
   },
 
-  // --- Страница 404 ---
+  // Роуты преподавателя
+  {
+    path: '/teacher',
+    element: <ProtectedRoute allowedRoles={['teacher']} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        element: <DashboardLayout />,
+        children: [
+          { index: true, element: <Navigate to="/teacher/dashboard" replace /> },
+          { path: 'dashboard', element: <TeacherDashboard /> },
+          { path: 'students', element: <TeacherStudentsPage /> },
+        ],
+      },
+    ],
+  },
+
+  // Страница 404
   {
     path: '*',
     element: <NotFoundPage />,
   },
 ]);
 
-// Главный компонент App, который просто предоставляет роутер
+// --- Главный компонент приложения ---
 const App: React.FC = () => {
   return <RouterProvider router={router} />;
 };

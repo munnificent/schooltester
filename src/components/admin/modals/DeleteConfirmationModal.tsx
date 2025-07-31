@@ -1,3 +1,4 @@
+// src/components/admin/modals/DeleteConfirmationModal.tsx
 import React from 'react';
 import { Button } from '../../ui/button';
 import { Modal } from './Modal';
