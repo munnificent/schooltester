@@ -1,17 +1,21 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, filters, status
-from rest_framework.decorators import api_view, permission_classes, action
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import viewsets, permissions, status, filters
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import User
-from .serializers import UserSerializer, TeacherPublicSerializer, ProfileSerializer, ChangePasswordSerializer # <-- Теперь импорт сработает
-from backend.permissions import IsAdmin
+from .serializers import UserSerializer, TeacherPublicSerializer, ChangePasswordSerializer
 from courses.models import Course
+from applications.models import Application
+from courses.serializers import CourseSerializer, LessonSerializer
+from applications.serializers import ApplicationSerializer
+from django.utils import timezone
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdmin]
+    permission_classes = [permissions.IsAdminUser]
     filter_backends = [filters.SearchFilter]
     search_fields = ['username', 'email', 'first_name', 'last_name']
 
@@ -48,17 +52,23 @@ def change_password_view(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAdmin])
-def admin_dashboard_stats_view(request):
+@permission_classes([permissions.IsAdminUser])
+def admin_dashboard_summary_view(request):
     stats = {
-        'students_count': User.objects.filter(role='student').count(),
-        'teachers_count': User.objects.filter(role='teacher').count(),
-        'courses_count': Course.objects.count(),
+        'studentsCount': User.objects.filter(role='student').count(),
+        'teachersCount': User.objects.filter(role='teacher').count(),
+        'coursesCount': Course.objects.count(),
+        'newApplicationsCount': Application.objects.filter(status='new').count(),
     }
-    return Response(stats)
+    recent_applications = Application.objects.order_by('-created_at')[:5]
+    dashboard_data = {
+        'stats': stats,
+        'recentApplications': ApplicationSerializer(recent_applications, many=True).data
+    }
+    return Response(dashboard_data)
 
 @api_view(['POST'])
-@permission_classes([IsAdmin])
+@permission_classes([permissions.IsAdminUser])
 def enroll_student_to_courses(request, pk):
     try:
         user = User.objects.get(pk=pk, role='student')

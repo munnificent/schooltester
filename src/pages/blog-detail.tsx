@@ -4,7 +4,7 @@ import React from 'react';
 import { Button, Chip, Divider, Avatar } from '@heroui/react';
 import { motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
-import { Link as RouteLink, useParams, useHistory } from 'react-router-dom';
+import { Link as RouteLink, useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/header';
 import Footer from '../components/footer';
 import RequestFormModal from '../components/request-form-modal';
@@ -12,7 +12,7 @@ import RequestFormModal from '../components/request-form-modal';
 const BlogDetail: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const { id } = useParams<{ id: string }>();
-  const history = useHistory();
+  const navigate = useNavigate();
   
   // In a real app, you would fetch the blog post by id from an API
   const blogPost = {
@@ -120,7 +120,7 @@ const BlogDetail: React.FC = () => {
             <Button
               variant="light"
               startContent={<Icon icon="lucide:arrow-left" width={16} />}
-              onPress={() => history.push('/blog')}
+              onPress={() => navigate('/blog')}
             >
               Назад к блогу
             </Button>

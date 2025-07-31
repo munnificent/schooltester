@@ -13,12 +13,13 @@ export type UserRole = 'student' | 'teacher' | 'admin';
 
 export interface UserProfile {
   id: number;
+  avatar?: string;
   phone?: string;
   dateOfBirth?: string;
   parentName?: string;
   parentPhone?: string;
-  school?: string; 
-  studentClass?: string; 
+  school?: string;
+  studentClass?: string;
 }
 
 export interface User {
@@ -27,7 +28,6 @@ export interface User {
   firstName: string;
   lastName: string;
   role: UserRole;
-  avatar?: string;
   isActive: boolean;
   lastLogin?: string; // Формат ISO 8601
   profile?: UserProfile;
@@ -36,15 +36,13 @@ export interface User {
 // --- Курсы и Уроки ---
 
 export type LessonStatus = 'planned' | 'completed' | 'cancelled';
-
-export interface Lesson {
   id: number;
   title: string;
   content: string;
-  course: number; // ID курса, к которому относится урок
-  date?: string; // Формат ISO 8601
-  time?: string; // Формат HH:MM
-  status?: LessonStatus;
+  course: number;
+  date?: string; // ISO 8601
+  time?: string; // HH:MM
+  status?: 'planned' | 'completed' | 'cancelled';
   recordingUrl?: string;
   homeworkUrl?: string;
 }
@@ -54,10 +52,10 @@ export interface Course {
   title: string;
   description: string;
   subject: string;
-  price: string; // Цена может быть строкой для форматирования
-  teacher: User; // Вложенный полный объект преподавателя
-  lessons?: Lesson[]; // Массив уроков этого курса
-  students?: User[]; // Массив студентов, записанных на курс
+  price: string;
+  teacher: User;
+  students?: User[];
+  lessons?: Lesson[];
 }
 
 // --- Блог ---
@@ -71,12 +69,15 @@ export interface BlogCategory {
 export interface BlogPost {
   id: number;
   title: string;
+  slug: string;
   content: string;
+  excerpt?: string;
+  image?: string;
   author: User;
   category: BlogCategory;
-  createdAt: string; // Формат ISO 8601
-  slug: string;
-  image?: string;
+  createdAt: string; // ISO 8601
+  updatedAt: string; // ISO 8601
+  isPublished: boolean;
 }
 
 // --- Отзывы ---

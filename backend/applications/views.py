@@ -3,7 +3,6 @@
 from rest_framework import viewsets, permissions
 from .models import Application
 from .serializers import ApplicationSerializer
-from backend.permissions import IsAdmin
 
 class ApplicationViewSet(viewsets.ModelViewSet):
     """ViewSet для заявок. Создание - для всех, управление - для админов."""
@@ -15,4 +14,4 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return [permissions.AllowAny()]
         # Все остальные действия (просмотр, редактирование, удаление) - только для админа
-        return [IsAdmin()]
+        return [permissions.IsAdminUser()]

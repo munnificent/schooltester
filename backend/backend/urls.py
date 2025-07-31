@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # --- Подключаем все URL ---
+    path('api/blog/', include('blog.urls')),
     path('api/', include('users.custom_urls')),
     path('api/', include('courses.nested_urls')),
     path('api/', include('courses.custom_urls')), # <--- ДОБАВЛЕНО

@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import toast from 'react-hot-toast';
-// ИСПРАВЛЕННЫЙ ИМПОРТ
+import { RequestFormModal } from '../components/modals/request-form-modal';
 import apiClient from '../api/apiClient';
 
 // --- Wrapper Components ---
@@ -160,56 +160,7 @@ const CalculatorSection: React.FC<{ onApplyClick: () => void }> = ({ onApplyClic
 // --- Modal Window ---
 type ApplyFormInputs = { name: string; phone: string; };
 
-const RequestFormModal: React.FC<{ isOpen: boolean; onClose: () => void; }> = ({ isOpen, onClose }) => {
-    const { register, handleSubmit, formState: { isSubmitting, errors }, reset } = useForm<ApplyFormInputs>();
-    
-    const onSubmit: SubmitHandler<ApplyFormInputs> = async (data) => {
-        try {
-            await apiClient.post('/applications/', data);
-            toast.success('Спасибо за заявку! Мы скоро с вами свяжемся.');
-            reset();
-            onClose();
-        } catch (error) {
-            toast.error('Произошла ошибка. Пожалуйста, попробуйте еще раз.');
-        }
-    };
 
-    if (!isOpen) return null;
-    
-    return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="bg-card rounded-xl shadow-2xl w-full max-w-md"
-            >
-                <header className="flex items-center justify-between p-4 border-b">
-                    <h3 className="text-lg font-semibold">Оставить заявку</h3>
-                    <button onClick={onClose} className="p-1 rounded-full hover:bg-muted"><X size={20}/></button>
-                </header>
-                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-                    <div>
-                        <label htmlFor="name" className="text-sm font-medium">Ваше имя</label>
-                        <input id="name" {...register('name', { required: true })} className="mt-1 block w-full px-3 py-2 bg-input border border-border rounded-md focus:outline-none focus:ring-primary focus:border-primary"/>
-                    </div>
-                     <div>
-                        <label htmlFor="phone" className="text-sm font-medium">Номер телефона</label>
-                        <input id="phone" type="tel" {...register('phone', { required: true })} className="mt-1 block w-full px-3 py-2 bg-input border border-border rounded-md focus:outline-none focus:ring-primary focus:border-primary"/>
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full flex justify-center items-center gap-2 py-2.5 px-4 rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 disabled:opacity-50"
-                    >
-                        {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-                        Отправить
-                    </button>
-                </form>
-            </motion.div>
-        </div>
-    );
-};
 
 
 // --- Main Page Component ---

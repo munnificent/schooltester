@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Plus, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -9,6 +9,8 @@ import { User, UserRole, PaginatedResponse } from '../types';
 
 import { UserFormModal } from '../components/admin/modals/UserFormModal';
 import { DeleteConfirmationModal } from '../components/admin/modals/DeleteConfirmationModal';
+import { DataTable, ColumnDef, StatusIndicator } from '../components/admin/DataTable';
+
 
 // --- Компоненты UI для таблицы ---
 
@@ -22,80 +24,20 @@ const RoleChip: React.FC<{ role: UserRole }> = ({ role }) => {
     return <span className={`px-2 py-1 text-xs font-medium rounded-full ${className}`}>{text}</span>;
 };
 
-const StatusIndicator: React.FC<{ isActive: boolean }> = ({ isActive }) => (
-    <div className="flex items-center gap-2">
-        <span className={`h-2.5 w-2.5 rounded-full ${isActive ? 'bg-success' : 'bg-gray-400'}`}></span>
-        <span className="text-sm">{isActive ? 'Активен' : 'Неактивен'}</span>
-    </div>
-);
+
 
 // --- Переиспользуемый компонент Таблицы ---
 
-interface ColumnDef<T> {
-    header: string;
-    accessorKey: keyof T | string;
-    cell?: (row: T) => React.ReactNode;
-}
 
-interface DataTableProps<T extends { id: number }> {
-    columns: ColumnDef<T>[];
-    data: T[];
-    isLoading: boolean;
-    onEdit: (item: T) => void;
-    onDelete: (item: T) => void;
-}
 
-function DataTable<T extends { id: number }>({ columns, data, isLoading, onEdit, onDelete }: DataTableProps<T>) {
-    if (isLoading) {
-        return (
-            <div className="space-y-2 animate-pulse">
-                {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-muted rounded-md" />)}
-            </div>
-        );
-    }
 
-    if (!Array.isArray(data) || data.length === 0) {
-        return <div className="text-center py-10 bg-muted rounded-md">Пользователи не найдены.</div>;
-    }
-
-    return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-border">
-                <thead className="bg-muted/50">
-                    <tr>
-                        {columns.map(col => (
-                            <th key={String(col.accessorKey)} className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                {col.header}
-                            </th>
-                        ))}
-                        <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Действия</th>
-                    </tr>
-                </thead>
-                <tbody className="bg-card divide-y divide-border">
-                    {data.map((item) => (
-                        <tr key={item.id}>
-                            {columns.map(col => (
-                                <td key={String(col.accessorKey)} className="px-6 py-4 whitespace-nowrap text-sm">
-                                    {col.cell ? col.cell(item) : String(item[col.accessorKey as keyof T] || '')}
-                                </td>
-                            ))}
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button onClick={() => onEdit(item)} className="text-primary hover:text-primary/80 mr-4">Редактировать</button>
-                                <button onClick={() => onDelete(item)} className="text-destructive hover:text-destructive/80">Удалить</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
-}
 
 // --- Основной компонент страницы ---
 
-const AdminUsersPage: React.FC = () => {
+function AdminUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRole, setSelectedRole] = useState<string>('all');
     const [isDeleting, setIsDeleting] = useState(false);
@@ -108,12 +50,13 @@ const AdminUsersPage: React.FC = () => {
 
     const fetchUsers = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
         try {
-            const params = { search: debouncedSearch, role: selectedRole === 'all' ? '' : selectedRole };
+            const params = { search: debouncedSearch, role: selectedRole === 'all' ? '' : selectedRole, ordering: '-created_at' };
             const response = await apiClient.get<PaginatedResponse<User>>('/users/', { params });
             setUsers(response.data.results);
         } catch (error) {
-            toast.error("Не удалось загрузить пользователей");
+            setError("Не удалось загрузить пользователей");
             setUsers([]);
         } finally {
             setIsLoading(false);
@@ -159,7 +102,7 @@ const AdminUsersPage: React.FC = () => {
             cell: (user) => (
                 <div className="flex items-center gap-3">
                     <img
-                        src={user.avatar || `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}`}
+                        src={user.profile?.avatar || `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}`}
                         alt="avatar"
                         className="h-9 w-9 rounded-full"
                     />
@@ -174,6 +117,17 @@ const AdminUsersPage: React.FC = () => {
         { header: 'Статус', accessorKey: 'isActive', cell: (user) => <StatusIndicator isActive={user.isActive} /> },
         { header: 'Последний вход', accessorKey: 'lastLogin', cell: (user) => user.lastLogin ? new Date(user.lastLogin).toLocaleString('ru-RU') : 'Никогда' },
     ], []);
+
+    if (error) {
+        return (
+            <div className="text-center py-10 bg-muted rounded-md">
+                <p className="font-medium text-destructive">{error}</p>
+                <button onClick={fetchUsers} className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition">
+                    Попробовать снова
+                </button>
+            </div>
+        );
+    }
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -216,8 +170,10 @@ const AdminUsersPage: React.FC = () => {
                     columns={columns}
                     data={users}
                     isLoading={isLoading}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
+                    actions={[
+                        { label: 'Редактировать', handler: handleEdit },
+                        { label: 'Удалить', handler: handleDelete, isDestructive: true },
+                    ]}
                 />
             </div>
 

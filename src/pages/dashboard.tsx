@@ -166,20 +166,8 @@ const StudentDashboard: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      // const response = await apiClient.get<DashboardData>('/dashboard-summary/');
-      // setData(response.data);
-
-      // --- Имитация ответа API ---
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const mockData: DashboardData = {
-        upcomingLessons: [
-          { id: 1, title: 'Введение в алгебру', content: '', course: { title: 'Математическая грамотность' }, date: new Date().toISOString(), time: '15:00:00' },
-          { id: 2, title: 'Древний Казахстан', content: '', course: { title: 'История Казахстана' }, date: new Date(Date.now() + 86400000).toISOString(), time: '17:00:00' },
-        ],
-        stats: { totalCourses: 3, completedPercentage: 65, testsTaken: 5 }
-      };
-      setData(mockData);
-
+      const response = await apiClient.get<DashboardData>('/dashboard-summary/');
+      setData(response.data);
     } catch (err) {
       setError("Произошла ошибка при запросе к серверу.");
     } finally {

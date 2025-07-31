@@ -116,27 +116,8 @@ const AdminDashboard: React.FC = () => {
             setIsLoading(true);
             setError(null);
             try {
-                // Загружаем все данные одним запросом к специальному эндпоинту
-                // const response = await apiClient.get<DashboardData>('/admin-dashboard-summary/');
-                // setData(response.data);
-
-                // --- Имитация ответа API ---
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                const mockData: DashboardData = {
-                    stats: {
-                        studentsCount: 125,
-                        teachersCount: 12,
-                        coursesCount: 20,
-                        newApplicationsCount: 8,
-                    },
-                    recentApplications: [
-                        { id: 1, name: 'Айдос Ермеков', phone: '+7 (707) 123-45-67', status: 'new', createdAt: new Date().toISOString() },
-                        { id: 2, name: 'Мадина Сапарова', phone: '+7 (701) 987-65-43', status: 'in_progress', createdAt: new Date().toISOString() },
-                        { id: 3, name: 'Тимур Алиев', phone: '+7 (777) 555-44-33', status: 'new', createdAt: new Date().toISOString() },
-                    ]
-                };
-                setData(mockData);
-
+                const response = await apiClient.get<DashboardData>('/admin-dashboard-summary/');
+                setData(response.data);
             } catch (err) {
                 setError("Не удалось загрузить данные для панели управления.");
             } finally {
