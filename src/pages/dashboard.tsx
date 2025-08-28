@@ -1,25 +1,18 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   BookOpen, CalendarClock, CheckSquare, ChevronRight,
-  Clock, Video, CalendarOff, Loader2, AlertCircle
+  Clock, Video, CalendarOff, AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/auth-context';
-import { AuthContext } from '../contexts/auth-context';
-import apiClient from'../api/apiClient'; // TODO: Убедиться, что apiClient настроен
+import apiClient from'../api/apiClient';
 import { Lesson, User } from '../types';
 
 // --- Типы для данных дашборда ---
-interface DashboardStats {
-  totalCourses: number;
-  completedPercentage: number;
-  testsTaken: number;
-}
-
 interface DashboardData {
   upcomingLessons: (Lesson & { course: { title: string } })[];
-  stats: DashboardStats;
+  enrolledCoursesCount: number;
 }
 
 // --- Вспомогательные функции для форматирования даты ---
@@ -50,11 +43,11 @@ const WelcomeHeader: React.FC<{ user: User | null }> = ({ user }) => (
   </div>
 );
 
-const StatsOverview: React.FC<{ stats: DashboardStats }> = ({ stats }) => {
+const StatsOverview: React.FC<{ enrolledCoursesCount: number }> = ({ enrolledCoursesCount }) => {
   const statItems = [
-    { icon: BookOpen, value: stats.totalCourses, label: 'Курсов в процессе' },
-    { icon: CheckSquare, value: `${stats.completedPercentage}%`, label: 'Завершено' },
-    { icon: CalendarClock, value: stats.testsTaken, label: 'Тестов пройдено' },
+    { icon: BookOpen, value: enrolledCoursesCount, label: 'Курсов в процессе' },
+    { icon: CheckSquare, value: `0%`, label: 'Завершено' },
+    { icon: CalendarClock, value: 0, label: 'Тестов пройдено' },
   ];
 
   return (
@@ -166,7 +159,7 @@ const StudentDashboard: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<DashboardData>('/dashboard-summary/');
+      const response = await apiClient.get<DashboardData>('/student-dashboard-summary/');
       setData(response.data);
     } catch (err) {
       setError("Произошла ошибка при запросе к серверу.");
@@ -190,7 +183,7 @@ const StudentDashboard: React.FC = () => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <WelcomeHeader user={user} />
-      <StatsOverview stats={data.stats} />
+      <StatsOverview enrolledCoursesCount={data.enrolledCoursesCount} />
       
       <section>
         <div className="flex items-center justify-between mb-4">

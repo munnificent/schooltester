@@ -2,14 +2,17 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, status, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
+
 from .models import User
 from .serializers import UserSerializer, TeacherPublicSerializer, ChangePasswordSerializer
-from courses.models import Course
+from courses.models import Course, Lesson
 from applications.models import Application
 from courses.serializers import CourseSerializer, LessonSerializer
 from applications.serializers import ApplicationSerializer
+from backend.permissions import IsTeacher
 from django.utils import timezone
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -83,3 +86,60 @@ def enroll_student_to_courses(request, pk):
     user.profile.enrolled_courses.set(courses)
     
     return Response({'status': f'Студент {user.username} обновлен в курсах.'}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_dashboard_summary_view(request):
+    user = request.user
+    enrolled_courses = user.profile.enrolled_courses.all()
+    upcoming_lessons = Lesson.objects.filter(
+        course__in=enrolled_courses,
+        date__gte=timezone.now()
+    ).order_by('date', 'time')[:5]
+
+    summary_data = {
+        'enrolledCoursesCount': enrolled_courses.count(),
+        'upcomingLessons': LessonSerializer(upcoming_lessons, many=True).data,
+    }
+    return Response(summary_data)
+
+@api_view(['GET'])
+@permission_classes([IsTeacher])
+def teacher_dashboard_summary_view(request):
+    teacher = request.user
+    courses_taught = Course.objects.filter(teacher=teacher)
+    course_count = courses_taught.count()
+
+    student_ids = set()
+    for course in courses_taught:
+        student_ids.update(course.students.values_list('id', flat=True))
+    
+    student_count = len(student_ids)
+
+    return Response({
+        'courseCount': course_count,
+        'studentCount': student_count,
+    })
+
+
+from rest_framework import generics
+
+class TeacherStudentsListView(generics.ListAPIView):
+    """
+    Returns a paginated list of unique students taught by the logged-in teacher.
+    Supports search on first_name, last_name, and email.
+    """
+    permission_classes = [IsTeacher]
+    serializer_class = UserSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['first_name', 'last_name', 'email']
+
+    def get_queryset(self):
+        teacher = self.request.user
+        courses_taught = Course.objects.filter(teacher=teacher)
+        
+        student_ids = set()
+        for course in courses_taught:
+            student_ids.update(course.students.values_list('id', flat=True))
+            
+        return User.objects.filter(id__in=student_ids).order_by('first_name', 'last_name')

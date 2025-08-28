@@ -33,6 +33,7 @@ import TestSimulatorPage from './pages/test-simulator';
 // --- Страницы преподавателя ---
 import TeacherDashboard from './pages/teacher-dashboard';
 import TeacherStudentsPage from './pages/teacher-students';
+import TeacherCoursesPage from './pages/teacher-courses';
 
 // --- Страницы администратора ---
 import AdminDashboard from './pages/admin-dashboard';
@@ -148,6 +149,7 @@ const router = createBrowserRouter([
           { index: true, element: <Navigate to="/teacher/dashboard" replace /> },
           { path: 'dashboard', element: <TeacherDashboard /> },
           { path: 'students', element: <TeacherStudentsPage /> },
+          { path: 'courses', element: <TeacherCoursesPage /> },
         ],
       },
     ],

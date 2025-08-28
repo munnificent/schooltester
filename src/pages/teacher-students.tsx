@@ -14,7 +14,7 @@ const TeacherStudents: React.FC = () => {
   useEffect(() => {
     const loadStudents = async () => {
       try {
-        const res = await apiClient.get('/users/', {
+        const res = await apiClient.get('/teacher-students/', {
           params: { role: 'student', search: searchQuery }
         });
         setStudents(res.data.results || []);

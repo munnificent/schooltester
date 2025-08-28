@@ -16,7 +16,7 @@ apiClient.interceptors.request.use((config) => {
 // --- Перехватчики для преобразования snake_case <-> camelCase ---
 
 apiClient.interceptors.response.use((response) => {
-  if (response.data && response.headers['content-type'] === 'application/json') {
+  if (response.data && response.headers['content-type'] && response.headers['content-type'].includes('application/json')) {
     response.data = camelizeKeys(response.data);
   }
   return response;

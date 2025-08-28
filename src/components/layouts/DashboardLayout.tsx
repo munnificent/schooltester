@@ -25,6 +25,7 @@ const navLinksConfig = {
   teacher: [
     { to: '/teacher/dashboard', text: 'Дашборд', icon: LayoutDashboard },
     { to: '/teacher/students', text: 'Мои ученики', icon: Users },
+    { to: '/teacher/courses', text: 'Мои курсы', icon: Book },
   ],
 };
 

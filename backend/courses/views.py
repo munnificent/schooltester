@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from django.utils import timezone
 from .models import Course, Lesson
 from .serializers import CourseSerializer, LessonSerializer
-from backend.permissions import IsAdminOrReadOnly, IsTeacherOfCourseOrAdmin
+from backend.permissions import IsAdminOrReadOnly, IsTeacherOfCourseOrAdmin, IsTeacher
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.select_related('teacher').prefetch_related('students', 'lessons').all()
@@ -31,7 +31,7 @@ def my_courses(request):
     if not hasattr(request.user, 'profile'):
         return Response([], status=status.HTTP_200_OK)
         
-    enrolled_courses = request.user.enrolled_courses.all()
+    enrolled_courses = request.user.profile.enrolled_courses.all()
     serializer = CourseSerializer(enrolled_courses, many=True)
     return Response(serializer.data)
 
@@ -41,11 +41,18 @@ def upcoming_lessons(request):
     if not hasattr(request.user, 'profile'):
         return Response([], status=status.HTTP_200_OK)
 
-    student_courses = request.user.enrolled_courses.all()
+    student_courses = request.user.profile.enrolled_courses.all()
     upcoming = Lesson.objects.filter(
         course__in=student_courses,
         date__gte=timezone.now().date()
     ).order_by('date', 'time')
 
     serializer = LessonSerializer(upcoming, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsTeacher])
+def my_teaching_courses(request):
+    courses = Course.objects.filter(teacher=request.user)
+    serializer = CourseSerializer(courses, many=True)
     return Response(serializer.data)

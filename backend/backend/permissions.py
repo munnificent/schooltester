@@ -14,3 +14,10 @@ class IsTeacherOfCourseOrAdmin(BasePermission):
         if hasattr(obj, 'course'):
             return obj.course.teacher == request.user
         return obj.teacher == request.user
+
+class IsTeacher(BasePermission):
+    """
+    Allows access only to users with the 'teacher' role.
+    """
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and request.user.role == 'teacher')
