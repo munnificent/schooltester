@@ -40,13 +40,13 @@ const TeacherCoursesPage: React.FC = () => {
 
   if (error) {
     return (
-        <div className="text-center py-10 bg-muted rounded-md">
-            <AlertCircle className="mx-auto h-12 w-12 text-destructive" />
-            <p className="mt-4 font-medium text-destructive">{error}</p>
-            <button onClick={fetchTeachingCourses} className="mt-6 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition">
-                Попробовать снова
-            </button>
-        </div>
+      <div className="text-center py-10 bg-muted rounded-md">
+        <AlertCircle className="mx-auto h-12 w-12 text-destructive" />
+        <p className="mt-4 font-medium text-destructive">{error}</p>
+        <button onClick={fetchTeachingCourses} className="mt-6 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition">
+          Попробовать снова
+        </button>
+      </div>
     );
   }
 
@@ -62,17 +62,17 @@ const TeacherCoursesPage: React.FC = () => {
             <div key={course.id} className="bg-card border rounded-lg overflow-hidden">
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">
-                    <Book className="h-6 w-6 text-primary"/>
-                    <h2 className="text-xl font-semibold truncate">{course.title}</h2>
+                  <Book className="h-6 w-6 text-primary" />
+                  <h2 className="text-xl font-semibold truncate">{course.title}</h2>
                 </div>
                 <p className="text-muted-foreground h-20 overflow-hidden text-ellipsis">{course.description}</p>
               </div>
               <div className="px-6 pb-6 pt-4 bg-muted/50">
-                 <button 
-                    onClick={() => handleManageLessons(course)}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                  >
-                    <Plus size={16} /> Управлять уроками
+                <button
+                  onClick={() => handleManageLessons(course)}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                >
+                  <Plus size={16} /> Управлять уроками
                 </button>
               </div>
             </div>
@@ -80,17 +80,17 @@ const TeacherCoursesPage: React.FC = () => {
         </div>
       ) : (
         <div className="text-center py-16 border-2 border-dashed rounded-lg">
-            <Book className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold">У вас пока нет курсов</h3>
-            <p className="mt-2 text-sm text-muted-foreground">Здесь будут отображаться курсы, которые вы ведете.</p>
+          <Book className="mx-auto h-12 w-12 text-muted-foreground" />
+          <h3 className="mt-4 text-lg font-semibold">У вас пока нет курсов</h3>
+          <p className="mt-2 text-sm text-muted-foreground">Здесь будут отображаться курсы, которые вы ведете.</p>
         </div>
       )}
 
       {selectedCourse && (
-        <LessonManagementModal 
-            courseId={selectedCourse.id}
-            isOpen={isLessonModalOpen}
-            onClose={() => setIsLessonModalOpen(false)}
+        <LessonManagementModal
+          course={selectedCourse}
+          isOpen={isLessonModalOpen}
+          onClose={() => setIsLessonModalOpen(false)}
         />
       )}
     </motion.div>

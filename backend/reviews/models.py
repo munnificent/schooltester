@@ -5,6 +5,7 @@ class Review(models.Model):
     author = models.CharField(max_length=100, verbose_name='Автор отзыва (имя, класс)')
     text = models.TextField(verbose_name='Текст отзыва')
     score_info = models.CharField(max_length=255, verbose_name='Информация о баллах/оценках')
+    rating = models.PositiveSmallIntegerField(default=5, verbose_name='Оценка (1-5)')
     # Изменяем значение по умолчанию на False
     is_published = models.BooleanField(default=False, verbose_name='Опубликован')
 

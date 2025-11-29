@@ -8,7 +8,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('id', 'avatar', 'phone', 'school', 'student_class', 'parent_name', 'parent_phone', 'enrolled_courses')
+        fields = ('id', 'avatar', 'phone', 'school', 'student_class', 'parent_name', 'parent_phone', 'enrolled_courses', 'experience', 'public_subjects', 'public_description')
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()

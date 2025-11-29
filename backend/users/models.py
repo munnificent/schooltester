@@ -22,6 +22,7 @@ class Profile(models.Model):
     student_class = models.CharField(max_length=50, blank=True, null=True)
     parent_name = models.CharField(max_length=255, blank=True, null=True)
     parent_phone = models.CharField(max_length=20, blank=True, null=True)
+    experience = models.CharField(max_length=100, blank=True, null=True, verbose_name="Опыт работы")
     enrolled_courses = models.ManyToManyField(
         Course, 
         related_name='enrolled_student_profiles',

@@ -1,28 +1,14 @@
-# backend/system_settings/views.py
+from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
+from .models import FAQ, PricingPlan
+from .serializers import FAQSerializer, PricingPlanSerializer
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import permissions
-from .models import SystemSettings
-from .serializers import SystemSettingsSerializer
-from backend.permissions import IsAdmin
+class FAQViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = FAQ.objects.filter(is_published=True)
+    serializer_class = FAQSerializer
+    permission_classes = [AllowAny]
 
-class SystemSettingsView(APIView):
-    """
-    View для получения и обновления системных настроек.
-    Доступно только администраторам.
-    """
-    permission_classes = [IsAdmin]
-
-    def get(self, request, *args, **kwargs):
-        settings = SystemSettings.load()
-        serializer = SystemSettingsSerializer(settings)
-        return Response(serializer.data)
-
-    def patch(self, request, *args, **kwargs):
-        settings = SystemSettings.load()
-        serializer = SystemSettingsSerializer(settings, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+class PricingPlanViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = PricingPlan.objects.all()
+    serializer_class = PricingPlanSerializer
+    permission_classes = [AllowAny]

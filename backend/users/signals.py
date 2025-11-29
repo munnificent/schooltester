@@ -1,2 +1,25 @@
-# Этот файл больше не используется, чтобы избежать дублирования сигналов.
-# Вся логика по созданию профиля перенесена в users/models.py.
+# backend/users/signals.py
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .models import User, Profile
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """
+    Automatically create a Profile when a new User is created
+    """
+    if created:
+        Profile.objects.get_or_create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    """
+    Ensure profile exists and save it when user is saved
+    """
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
+    else:
+        # Create profile if it doesn't exist
+        Profile.objects.get_or_create(user=instance)

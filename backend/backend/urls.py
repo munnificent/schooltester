@@ -33,5 +33,6 @@ urlpatterns = [
     path('api/', include('users.custom_urls')),
     path('api/', include('courses.nested_urls')),
     path('api/', include('courses.custom_urls')), # <--- ДОБАВЛЕНО
+    path('api/', include('system_settings.urls')),
     path('api/', include(router.urls)),
 ]

@@ -110,11 +110,10 @@ def teacher_dashboard_summary_view(request):
     courses_taught = Course.objects.filter(teacher=teacher)
     course_count = courses_taught.count()
 
-    student_ids = set()
-    for course in courses_taught:
-        student_ids.update(course.students.values_list('id', flat=True))
-    
-    student_count = len(student_ids)
+    # Optimized: Get count of unique students enrolled in teacher's courses directly from DB
+    student_count = User.objects.filter(
+        profile__enrolled_courses__teacher=teacher
+    ).distinct().count()
 
     return Response({
         'courseCount': course_count,
@@ -136,10 +135,7 @@ class TeacherStudentsListView(generics.ListAPIView):
 
     def get_queryset(self):
         teacher = self.request.user
-        courses_taught = Course.objects.filter(teacher=teacher)
-        
-        student_ids = set()
-        for course in courses_taught:
-            student_ids.update(course.students.values_list('id', flat=True))
-            
-        return User.objects.filter(id__in=student_ids).order_by('first_name', 'last_name')
+        # Optimized: Filter users directly via related fields
+        return User.objects.filter(
+            profile__enrolled_courses__teacher=teacher
+        ).distinct().order_by('first_name', 'last_name')

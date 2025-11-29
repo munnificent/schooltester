@@ -2,11 +2,11 @@ import React, { useContext, useState, useRef } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { User, Mail, Phone, Building, GraduationCap, Edit, KeyRound, Loader2, Save, X } from 'lucide-react';
+import { Mail, Phone, Building, GraduationCap, Edit, Loader2, Save, X, KeyRound } from 'lucide-react';
 
 import { AuthContext } from '../contexts/auth-context';
 import { User as UserType } from '../types'; // Импортируем наш основной тип
-import apiClient from'../api/apiClient'; // TODO: Убедиться, что apiClient настроен
+import apiClient from '../api/apiClient'; // TODO: Убедиться, что apiClient настроен
 
 // --- Типы для форм ---
 type ProfileFormInputs = {
@@ -48,26 +48,26 @@ const ProfilePage: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <UserProfileCard user={user} onAvatarChange={refetchUser} />
-        
+
         <div className="lg:col-span-2">
           <div className="bg-card text-card-foreground rounded-xl border shadow-sm">
             <div className="border-b">
               <nav className="flex gap-4 p-2">
-                <button 
-                  onClick={() => setActiveTab('personal')} 
+                <button
+                  onClick={() => setActiveTab('personal')}
                   className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'personal' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50'}`}
                 >
                   Личные данные
                 </button>
-                <button 
-                  onClick={() => setActiveTab('security')} 
+                <button
+                  onClick={() => setActiveTab('security')}
                   className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'security' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50'}`}
                 >
                   Безопасность
                 </button>
               </nav>
             </div>
-            
+
             <div className="p-6">
               {activeTab === 'personal' && <PersonalDataForm currentUser={user} onUpdate={refetchUser} />}
               {activeTab === 'security' && <SecurityForm />}
@@ -121,12 +121,12 @@ const UserProfileCard: React.FC<{ user: UserType, onAvatarChange: () => void }> 
     <div className="bg-card text-card-foreground rounded-xl border shadow-sm p-6 flex flex-col items-center text-center">
       <div className="relative">
         <img
-            src={user.avatar || `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=random`}
-            alt="Avatar"
-            className="w-24 h-24 rounded-full object-cover mb-4 border-2 border-primary"
+          src={user?.profile?.avatar || `https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=random`}
+          alt="Profile"
+          className="w-24 h-24 rounded-full object-cover mb-4 border-2 border-primary"
         />
         <button onClick={handleAvatarClick} disabled={isUploading} className="absolute bottom-4 -right-1 bg-primary text-primary-foreground p-1.5 rounded-full hover:bg-primary/90 transition-transform hover:scale-110">
-          {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Edit className="h-4 w-4"/>}
+          {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Edit className="h-4 w-4" />}
         </button>
         <input type="file" ref={avatarInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
       </div>
@@ -172,11 +172,11 @@ const PersonalDataForm: React.FC<{ currentUser: UserType, onUpdate: () => void }
       await onUpdate();
       setIsEditing(false);
     } catch (error: any) {
-        const errorMsg = error.response?.data?.detail || "Не удалось сохранить профиль.";
-        toast.error(errorMsg, { id: toastId });
+      const errorMsg = error.response?.data?.detail || "Не удалось сохранить профиль.";
+      toast.error(errorMsg, { id: toastId });
     }
   };
-  
+
   const handleCancel = () => {
     reset(); // Сбрасываем форму к исходным значениям
     setIsEditing(false);
@@ -187,23 +187,23 @@ const PersonalDataForm: React.FC<{ currentUser: UserType, onUpdate: () => void }
       <header className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-semibold">Личные данные</h3>
         <div className="flex gap-2">
-            {isEditing ? (
-                <>
-                    <button type="button" onClick={handleCancel} className="inline-flex items-center justify-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium hover:bg-muted/50">
-                        <X className="h-4 w-4"/> Отмена
-                    </button>
-                    <button type="submit" disabled={isSubmitting} className="inline-flex items-center justify-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : <Save className="h-4 w-4"/>} Сохранить
-                    </button>
-                </>
-            ) : (
-                <button type="button" onClick={() => setIsEditing(true)} className="inline-flex items-center justify-center gap-1 rounded-md bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/20">
-                    <Edit className="h-4 w-4"/> Редактировать
-                </button>
-            )}
+          {isEditing ? (
+            <>
+              <button type="button" onClick={handleCancel} className="inline-flex items-center justify-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium hover:bg-muted/50">
+                <X className="h-4 w-4" /> Отмена
+              </button>
+              <button type="submit" disabled={isSubmitting} className="inline-flex items-center justify-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Сохранить
+              </button>
+            </>
+          ) : (
+            <button type="button" onClick={() => setIsEditing(true)} className="inline-flex items-center justify-center gap-1 rounded-md bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/20">
+              <Edit className="h-4 w-4" /> Редактировать
+            </button>
+          )}
         </div>
       </header>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormInput id="firstName" label="Имя" register={register} readOnly={!isEditing} />
         <FormInput id="lastName" label="Фамилия" register={register} readOnly={!isEditing} />
@@ -214,7 +214,7 @@ const PersonalDataForm: React.FC<{ currentUser: UserType, onUpdate: () => void }
       </div>
 
       <hr className="w-full my-6 border-border" />
-      
+
       <div>
         <h3 className="text-lg font-semibold mb-4">Информация о родителе/опекуне</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -227,69 +227,69 @@ const PersonalDataForm: React.FC<{ currentUser: UserType, onUpdate: () => void }
 };
 
 const SecurityForm = () => {
-    const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<PasswordFormInputs>();
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<PasswordFormInputs>();
 
-    const onSubmit: SubmitHandler<PasswordFormInputs> = async (data) => {
-        if (data.newPassword !== data.newPasswordConfirm) {
-            toast.error("Новые пароли не совпадают.");
-            return;
-        }
-        
-        const toastId = toast.loading('Изменение пароля...');
-        try {
-            await apiClient.post('/users/change-password/', data);
-            toast.success('Пароль успешно изменен!', { id: toastId });
-            reset();
-        } catch (error: any) {
-            const errorMsg = Object.values(error.response?.data || {}).flat().join(' ') || "Не удалось изменить пароль.";
-            toast.error(errorMsg, { id: toastId });
-        }
-    };
-    
-    return (
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md">
-            <h3 className="text-lg font-semibold mb-6">Изменение пароля</h3>
-            <div className="flex flex-col gap-4">
-                <FormInput id="oldPassword" label="Текущий пароль" type="password" register={register} required />
-                <FormInput id="newPassword" label="Новый пароль" type="password" register={register} required />
-                <FormInput id="newPasswordConfirm" label="Подтверждение пароля" type="password" register={register} required />
-                <div className="mt-2">
-                    <button type="submit" disabled={isSubmitting} className="inline-flex items-center justify-center gap-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : <KeyRound className="h-4 w-4"/>} Изменить пароль
-                    </button>
-                </div>
-            </div>
-        </form>
-    );
+  const onSubmit: SubmitHandler<PasswordFormInputs> = async (data) => {
+    if (data.newPassword !== data.newPasswordConfirm) {
+      toast.error("Новые пароли не совпадают.");
+      return;
+    }
+
+    const toastId = toast.loading('Изменение пароля...');
+    try {
+      await apiClient.post('/users/change-password/', data);
+      toast.success('Пароль успешно изменен!', { id: toastId });
+      reset();
+    } catch (error: any) {
+      const errorMsg = Object.values(error.response?.data || {}).flat().join(' ') || "Не удалось изменить пароль.";
+      toast.error(errorMsg, { id: toastId });
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-md">
+      <h3 className="text-lg font-semibold mb-6">Изменение пароля</h3>
+      <div className="flex flex-col gap-4">
+        <FormInput id="oldPassword" label="Текущий пароль" type="password" register={register} required />
+        <FormInput id="newPassword" label="Новый пароль" type="password" register={register} required />
+        <FormInput id="newPasswordConfirm" label="Подтверждение пароля" type="password" register={register} required />
+        <div className="mt-2">
+          <button type="submit" disabled={isSubmitting} className="inline-flex items-center justify-center gap-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
+            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />} Изменить пароль
+          </button>
+        </div>
+      </div>
+    </form>
+  );
 }
 
 // --- Переиспользуемые компоненты форм ---
 const FormInput = ({ id, label, register, readOnly = false, type = 'text', required = false }) => (
-    <div className="space-y-1">
-        <label htmlFor={id} className="text-sm font-medium">{label}</label>
-        <input 
-            id={id}
-            type={type}
-            {...register(id, { required })}
-            readOnly={readOnly}
-            className="block w-full px-3 py-2 bg-input border border-border rounded-md shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm disabled:bg-muted/50"
-            disabled={readOnly}
-        />
-    </div>
+  <div className="space-y-1">
+    <label htmlFor={id} className="text-sm font-medium">{label}</label>
+    <input
+      id={id}
+      type={type}
+      {...register(id, { required })}
+      readOnly={readOnly}
+      className="block w-full px-3 py-2 bg-input border border-border rounded-md shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm disabled:bg-muted/50"
+      disabled={readOnly}
+    />
+  </div>
 );
 
 const FormSelect = ({ id, label, register, readOnly = false, options, required = false }) => (
-    <div className="space-y-1">
-        <label htmlFor={id} className="text-sm font-medium">{label}</label>
-        <select
-            id={id}
-            {...register(id, { required })}
-            disabled={readOnly}
-            className="block w-full px-3 py-2 bg-input border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm disabled:bg-muted/50"
-        >
-            {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
-    </div>
+  <div className="space-y-1">
+    <label htmlFor={id} className="text-sm font-medium">{label}</label>
+    <select
+      id={id}
+      {...register(id, { required })}
+      disabled={readOnly}
+      className="block w-full px-3 py-2 bg-input border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm disabled:bg-muted/50"
+    >
+      {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+    </select>
+  </div>
 );
 
 

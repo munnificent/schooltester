@@ -18,7 +18,10 @@ interface LessonManagementModalProps {
 type LessonFormInputs = {
   title: string;
   content: string;
-  // TODO: Add other fields like date, homeworkUrl, etc. if needed
+  date?: string;
+  time?: string;
+  recordingUrl?: string;
+  homeworkUrl?: string;
 };
 
 // --- Child Components ---
@@ -33,14 +36,21 @@ const LessonForm: React.FC<{
 
   useEffect(() => {
     if (currentLesson) {
-      reset({ title: currentLesson.title, content: currentLesson.content });
+      reset({
+        title: currentLesson.title,
+        content: currentLesson.content,
+        date: currentLesson.date,
+        time: currentLesson.time,
+        recordingUrl: currentLesson.recordingUrl,
+        homeworkUrl: currentLesson.homeworkUrl
+      });
     } else {
       reset({ title: '', content: '' });
     }
   }, [currentLesson, reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSave)} className="p-5 bg-muted/50 border rounded-lg h-full flex flex-col">
+    <form onSubmit={handleSubmit(onSave)} className="p-5 bg-muted/50 border rounded-lg h-full flex flex-col overflow-y-auto">
       <h3 className="text-base font-semibold mb-4">
         {currentLesson ? 'Редактировать урок' : 'Добавить новый урок'}
       </h3>
@@ -50,14 +60,32 @@ const LessonForm: React.FC<{
           <input {...register('title', { required: 'Название обязательно' })} id="title" className="mt-1 w-full input" />
           {errors.title && <p className="text-xs text-destructive mt-1">{errors.title.message}</p>}
         </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="date" className="text-sm font-medium">Дата</label>
+            <input type="date" {...register('date')} id="date" className="mt-1 w-full input" />
+          </div>
+          <div>
+            <label htmlFor="time" className="text-sm font-medium">Время</label>
+            <input type="time" {...register('time')} id="time" className="mt-1 w-full input" />
+          </div>
+        </div>
         <div>
-          <label htmlFor="content" className="text-sm font-medium">Содержание (ссылки, текст)</label>
-          <textarea {...register('content')} id="content" rows={5} className="mt-1 w-full input" />
+          <label htmlFor="content" className="text-sm font-medium">Содержание</label>
+          <textarea {...register('content')} id="content" rows={3} className="mt-1 w-full input" />
+        </div>
+        <div>
+          <label htmlFor="recordingUrl" className="text-sm font-medium">Ссылка на запись</label>
+          <input type="url" {...register('recordingUrl')} id="recordingUrl" className="mt-1 w-full input" placeholder="https://..." />
+        </div>
+        <div>
+          <label htmlFor="homeworkUrl" className="text-sm font-medium">Ссылка на Д/З</label>
+          <input type="url" {...register('homeworkUrl')} id="homeworkUrl" className="mt-1 w-full input" placeholder="https://..." />
         </div>
       </div>
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-2 mt-4 pt-4 border-t">
         <button type="submit" disabled={isSaving || !isDirty} className="btn-primary flex-1">
-          {isSaving ? <Loader2 className="h-4 w-4 animate-spin"/> : <Save className="h-4 w-4"/>}
+          {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           {currentLesson ? 'Сохранить' : 'Добавить'}
         </button>
         {currentLesson && (
@@ -76,7 +104,7 @@ const LessonList: React.FC<{
 }> = ({ lessons, isLoading, onEdit, onDelete }) => {
   if (isLoading) {
     return <div className="space-y-2 animate-pulse">
-        {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-12 bg-muted rounded-md" />)}
+      {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-12 bg-muted rounded-md" />)}
     </div>
   }
 
@@ -125,7 +153,7 @@ export const LessonManagementModal: React.FC<LessonManagementModalProps> = ({ is
     if (isOpen) {
       fetchLessons();
     } else {
-        setCurrentLesson(null); // Reset form when modal closes
+      setCurrentLesson(null); // Reset form when modal closes
     }
   }, [isOpen, fetchLessons]);
 
@@ -155,12 +183,12 @@ export const LessonManagementModal: React.FC<LessonManagementModalProps> = ({ is
     if (!course || !lessonToDelete) return;
     const toastId = toast.loading('Удаление урока...');
     try {
-        await apiClient.delete(`/courses/${course.id}/lessons/${lessonToDelete.id}/`);
-        toast.success('Урок удален!', { id: toastId });
-        setLessonToDelete(null); // Close confirmation modal
-        fetchLessons(); // Refresh list
+      await apiClient.delete(`/courses/${course.id}/lessons/${lessonToDelete.id}/`);
+      toast.success('Урок удален!', { id: toastId });
+      setLessonToDelete(null); // Close confirmation modal
+      fetchLessons(); // Refresh list
     } catch (error) {
-        toast.error('Не удалось удалить урок.', { id: toastId });
+      toast.error('Не удалось удалить урок.', { id: toastId });
     }
   };
 
@@ -168,21 +196,21 @@ export const LessonManagementModal: React.FC<LessonManagementModalProps> = ({ is
     <>
       <Modal isOpen={isOpen} onClose={onClose} title={`Уроки курса: ${course?.title}`}>
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
-            <LessonForm
-                currentLesson={currentLesson}
-                onSave={handleSave}
-                onCancel={() => setCurrentLesson(null)}
-                isSaving={isSaving}
+          <LessonForm
+            currentLesson={currentLesson}
+            onSave={handleSave}
+            onCancel={() => setCurrentLesson(null)}
+            isSaving={isSaving}
+          />
+          <div className="h-full">
+            <h3 className="text-base font-semibold mb-4">Список уроков</h3>
+            <LessonList
+              lessons={lessons}
+              isLoading={isLoading}
+              onEdit={setCurrentLesson}
+              onDelete={setLessonToDelete}
             />
-            <div className="h-full">
-                 <h3 className="text-base font-semibold mb-4">Список уроков</h3>
-                <LessonList
-                    lessons={lessons}
-                    isLoading={isLoading}
-                    onEdit={setCurrentLesson}
-                    onDelete={setLessonToDelete}
-                />
-            </div>
+          </div>
         </div>
         <footer className="flex justify-end p-4 bg-muted/50 border-t">
           <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md hover:bg-muted">Закрыть</button>

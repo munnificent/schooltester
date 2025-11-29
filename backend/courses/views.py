@@ -1,6 +1,6 @@
 from rest_framework import viewsets, filters, status
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from django.utils import timezone
 from .models import Course, Lesson
@@ -25,6 +25,20 @@ class LessonViewSet(viewsets.ModelViewSet):
         course = Course.objects.get(pk=self.kwargs['course_pk'])
         serializer.save(course=course)
 
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def toggle_completion(self, request, course_pk=None, pk=None):
+        lesson = self.get_object()
+        user = request.user
+        
+        from .models import LessonCompletion
+        completion, created = LessonCompletion.objects.get_or_create(user=user, lesson=lesson)
+        
+        if not created:
+            completion.delete()
+            return Response({'status': 'uncompleted'})
+        
+        return Response({'status': 'completed'})
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def my_courses(request):
@@ -35,8 +49,12 @@ def my_courses(request):
     serializer = CourseSerializer(enrolled_courses, many=True)
     return Response(serializer.data)
 
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@cache_page(60 * 15) # Cache for 15 minutes
 def upcoming_lessons(request):
     if not hasattr(request.user, 'profile'):
         return Response([], status=status.HTTP_200_OK)

@@ -36,15 +36,17 @@ export interface User {
 // --- Курсы и Уроки ---
 
 export type LessonStatus = 'planned' | 'completed' | 'cancelled';
+export interface Lesson {
   id: number;
   title: string;
-  content: string;
+  content?: string;
   course: number;
   date?: string; // ISO 8601
   time?: string; // HH:MM
-  status?: 'planned' | 'completed' | 'cancelled';
+  status?: LessonStatus;
   recordingUrl?: string;
   homeworkUrl?: string;
+  isCompleted?: boolean;
 }
 
 export interface Course {
@@ -113,6 +115,44 @@ export interface SystemSettings {
   // ... любые другие глобальные настройки
 }
 
+export interface TeacherPublic {
+  id: number;
+  firstName: string;
+  lastName: string;
+  profile: {
+    avatar?: string;
+    publicSubjects?: string;
+    publicDescription?: string;
+    experience?: string;
+  }
+}
+
+export interface ReviewPublic {
+  id: number;
+  author: string;
+  text: string;
+  scoreInfo: string;
+  rating: number;
+}
+
+export interface FAQ {
+  id: number;
+  question: string;
+  answer: string;
+  order: number;
+}
+
+export interface PricingPlan {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  features: string;
+  featuresList: string[];
+  isPopular: boolean;
+  order: number;
+}
+
 // --- Вспомогательные типы для API ---
 
 // Универсальный тип для ответов API с пагинацией
@@ -121,4 +161,20 @@ export interface PaginatedResponse<T> {
   next: string | null;
   previous: string | null;
   results: T[];
+}
+
+// --- Тесты ---
+
+export interface TestQuestion {
+  id: number;
+  questionText: string;
+  options: string[];
+  correctOptionIndex: number;
+}
+
+export interface TestDetails {
+  id: number;
+  title: string;
+  courseTitle: string;
+  questions: TestQuestion[];
 }

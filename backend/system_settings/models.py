@@ -36,6 +36,35 @@ class SystemSettings(models.Model):
         obj, created = cls.objects.get_or_create(pk=1)
         return obj
 
-    class Meta:
         verbose_name = "Системные настройки"
         verbose_name_plural = "Системные настройки"
+
+class FAQ(models.Model):
+    question = models.CharField(max_length=255, verbose_name="Вопрос")
+    answer = models.TextField(verbose_name="Ответ")
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок сортировки")
+    is_published = models.BooleanField(default=True, verbose_name="Опубликован")
+
+    class Meta:
+        verbose_name = "Часто задаваемый вопрос"
+        verbose_name_plural = "Часто задаваемые вопросы"
+        ordering = ['order']
+
+    def __str__(self):
+        return self.question
+
+class PricingPlan(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Название тарифа")
+    description = models.TextField(verbose_name="Описание")
+    price = models.CharField(max_length=50, verbose_name="Цена")
+    features = models.TextField(verbose_name="Особенности (через запятую или новую строку)")
+    is_popular = models.BooleanField(default=False, verbose_name="Популярный выбор")
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок сортировки")
+
+    class Meta:
+        verbose_name = "Тарифный план"
+        verbose_name_plural = "Тарифные планы"
+        ordering = ['order']
+
+    def __str__(self):
+        return self.name

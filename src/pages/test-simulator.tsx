@@ -1,27 +1,16 @@
 import React, { useEffect, useReducer, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, XCircle, Clock, RotateCcw, ArrowRight } from 'lucide-react';
+import { CheckCircle2, XCircle, RotateCcw, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 // Предполагаем, что у нас есть apiClient для запросов
 // import apiClient from'../api/apiClient'; 
 
-// --- Типы ---
-// TODO: Перенести в /types/index.ts, если будут переиспользоваться
-interface TestQuestion {
-  id: number;
-  questionText: string;
-  options: string[];
-  correctOptionIndex: number;
-}
+import { TestDetails } from '../types';
 
-interface TestDetails {
-  id: number;
-  title: string;
-  courseTitle: string;
-  questions: TestQuestion[];
-}
+// --- Типы ---
+// Типы перенесены в /types/index.ts
 
 type Screen = 'loading' | 'test' | 'results' | 'error';
 
@@ -98,19 +87,19 @@ const UiCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ c
 // --- Основные компоненты экранов ---
 
 const LoadingScreen: React.FC = () => (
-    <div className="max-w-2xl mx-auto animate-pulse">
-        <div className="h-8 bg-muted rounded w-1/3 mb-6"></div>
-        <div className="h-4 bg-muted rounded w-full mb-8"></div>
-        <UiCard className="p-6">
-            <div className="h-6 bg-muted rounded w-3/4 mb-6"></div>
-            <div className="space-y-4">
-                <div className="h-10 bg-muted rounded"></div>
-                <div className="h-10 bg-muted rounded"></div>
-                <div className="h-10 bg-muted rounded"></div>
-                <div className="h-10 bg-muted rounded"></div>
-            </div>
-        </UiCard>
-    </div>
+  <div className="max-w-2xl mx-auto animate-pulse">
+    <div className="h-8 bg-muted rounded w-1/3 mb-6"></div>
+    <div className="h-4 bg-muted rounded w-full mb-8"></div>
+    <UiCard className="p-6">
+      <div className="h-6 bg-muted rounded w-3/4 mb-6"></div>
+      <div className="space-y-4">
+        <div className="h-10 bg-muted rounded"></div>
+        <div className="h-10 bg-muted rounded"></div>
+        <div className="h-10 bg-muted rounded"></div>
+        <div className="h-10 bg-muted rounded"></div>
+      </div>
+    </UiCard>
+  </div>
 );
 
 const ErrorScreen: React.FC<{ message: string; onRetry: () => void }> = ({ message, onRetry }) => (
@@ -172,14 +161,13 @@ const TestScreen: React.FC<{ state: State; dispatch: React.Dispatch<Action> }> =
               Вопрос {currentIndex + 1} из {testDetails.questions.length}
             </p>
             <h2 className="text-lg font-semibold mb-6">{currentQuestion.questionText}</h2>
-            
+
             <div className="space-y-3">
               {currentQuestion.options.map((option, index) => (
                 <label
                   key={index}
-                  className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${
-                    answers[currentQuestion.id] === index ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'
-                  }`}
+                  className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${answers[currentQuestion.id] === index ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'
+                    }`}
                 >
                   <input
                     type="radio"
@@ -212,45 +200,45 @@ const TestScreen: React.FC<{ state: State; dispatch: React.Dispatch<Action> }> =
 };
 
 const ResultsScreen: React.FC<{ state: State; dispatch: React.Dispatch<Action> }> = ({ state, dispatch }) => {
-    const { result, testDetails } = state;
-    const navigate = useNavigate();
-    const percentage = result.total > 0 ? Math.round((result.correct / result.total) * 100) : 0;
-    
-    const getResultInfo = (p: number) => {
-        if (p >= 80) return { message: 'Отличный результат!', color: 'text-success' };
-        if (p >= 60) return { message: 'Хороший результат!', color: 'text-primary' };
-        if (p >= 40) return { message: 'Можно и лучше', color: 'text-amber-500' };
-        return { message: 'Стоит подучить материал', color: 'text-destructive' };
-    };
+  const { result, testDetails } = state;
+  const navigate = useNavigate();
+  const percentage = result.total > 0 ? Math.round((result.correct / result.total) * 100) : 0;
 
-    const info = getResultInfo(percentage);
+  const getResultInfo = (p: number) => {
+    if (p >= 80) return { message: 'Отличный результат!', color: 'text-success' };
+    if (p >= 60) return { message: 'Хороший результат!', color: 'text-primary' };
+    if (p >= 40) return { message: 'Можно и лучше', color: 'text-amber-500' };
+    return { message: 'Стоит подучить материал', color: 'text-destructive' };
+  };
 
-    return (
-        <div className="max-w-md mx-auto">
-            <UiCard className="p-8 text-center">
-                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 20 }}>
-                    {percentage >= 60 ? <CheckCircle2 className={`mx-auto h-16 w-16 ${info.color}`} /> : <XCircle className={`mx-auto h-16 w-16 ${info.color}`} />}
-                </motion.div>
-                <h1 className="mt-4 text-2xl font-bold">Тест завершен!</h1>
-                <p className={`mt-2 text-lg font-medium ${info.color}`}>{info.message}</p>
-                
-                <div className="my-6">
-                    <p className="text-4xl font-bold">{result.correct} <span className="text-xl text-muted-foreground">/ {result.total}</span></p>
-                    <p className="text-muted-foreground">правильных ответов</p>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                     <button onClick={() => navigate('/my-courses')} className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-muted px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted/80">
-                        К моим курсам
-                    </button>
-                    <button onClick={() => dispatch({ type: 'RESTART' })} className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-                        <RotateCcw className="h-4 w-4" />
-                        Пройти еще раз
-                    </button>
-                </div>
-            </UiCard>
+  const info = getResultInfo(percentage);
+
+  return (
+    <div className="max-w-md mx-auto">
+      <UiCard className="p-8 text-center">
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 20 }}>
+          {percentage >= 60 ? <CheckCircle2 className={`mx-auto h-16 w-16 ${info.color}`} /> : <XCircle className={`mx-auto h-16 w-16 ${info.color}`} />}
+        </motion.div>
+        <h1 className="mt-4 text-2xl font-bold">Тест завершен!</h1>
+        <p className={`mt-2 text-lg font-medium ${info.color}`}>{info.message}</p>
+
+        <div className="my-6">
+          <p className="text-4xl font-bold">{result.correct} <span className="text-xl text-muted-foreground">/ {result.total}</span></p>
+          <p className="text-muted-foreground">правильных ответов</p>
         </div>
-    );
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button onClick={() => navigate('/my-courses')} className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-muted px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted/80">
+            К моим курсам
+          </button>
+          <button onClick={() => dispatch({ type: 'RESTART' })} className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            <RotateCcw className="h-4 w-4" />
+            Пройти еще раз
+          </button>
+        </div>
+      </UiCard>
+    </div>
+  );
 };
 
 
@@ -264,7 +252,7 @@ const TestSimulatorPage: React.FC = () => {
       dispatch({ type: 'FETCH_ERROR', payload: 'ID курса не найден в URL.' });
       return;
     }
-    
+
     try {
       // --- ЗАГЛУШКА ДЛЯ API ---
       // В реальном приложении здесь будет запрос к API
@@ -272,20 +260,20 @@ const TestSimulatorPage: React.FC = () => {
       // dispatch({ type: 'FETCH_SUCCESS', payload: response.data });
 
       // --- Имитация ответа API ---
-      console.log(`Загрузка теста для курса ID: ${courseId}`);
+      // console.log(`Загрузка теста для курса ID: ${courseId}`);
       await new Promise(resolve => setTimeout(resolve, 1000)); // Имитация задержки сети
-      
+
       const mockApiResponse: TestDetails = {
         id: 1,
         title: "Итоговый тест",
         courseTitle: "Математическая грамотность",
         questions: [
-            { id: 101, questionText: "Чему равно 2 + 2 * 2?", options: ["6", "8", "4", "10"], correctOptionIndex: 0 },
-            { id: 102, questionText: "Столица Казахстана?", options: ["Алматы", "Астана", "Караганда", "Шымкент"], correctOptionIndex: 1 },
-            { id: 103, questionText: "Сколько будет (5 + 3) / 2?", options: ["3", "4", "5", "6"], correctOptionIndex: 1 },
+          { id: 101, questionText: "Чему равно 2 + 2 * 2?", options: ["6", "8", "4", "10"], correctOptionIndex: 0 },
+          { id: 102, questionText: "Столица Казахстана?", options: ["Алматы", "Астана", "Караганда", "Шымкент"], correctOptionIndex: 1 },
+          { id: 103, questionText: "Сколько будет (5 + 3) / 2?", options: ["3", "4", "5", "6"], correctOptionIndex: 1 },
         ]
       };
-      
+
       dispatch({ type: 'FETCH_SUCCESS', payload: mockApiResponse });
       toast.success('Тест успешно загружен!');
 

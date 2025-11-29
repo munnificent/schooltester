@@ -15,12 +15,12 @@ class Course(models.Model):
         related_name='teaching_courses',
         verbose_name="Преподаватель"
     )
-    students = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name='enrolled_courses',
-        blank=True,
-        limit_choices_to={'role': 'student'}
-    )
+
+    @property
+    def students(self):
+        """Get all students enrolled in this course through their profiles"""
+        from users.models import User
+        return User.objects.filter(profile__enrolled_courses=self, role='student')
 
     def __str__(self):
         return self.title
@@ -34,7 +34,7 @@ class Lesson(models.Model):
     title = models.CharField(max_length=255, verbose_name="Название урока")
     content = models.TextField(blank=True, null=True, verbose_name="Содержание/материалы")
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons', verbose_name="Курс")
-    date = models.DateField(verbose_name="Дата урока", null=True, blank=True)
+    date = models.DateField(verbose_name="Дата урока", null=True, blank=True, db_index=True)
     time = models.TimeField(verbose_name="Время урока", null=True, blank=True)
     status = models.CharField(
         max_length=10,
@@ -47,3 +47,14 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
+
+class LessonCompletion(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='lesson_completions')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='completions')
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'lesson')
+
+    def __str__(self):
+        return f"{self.user} completed {self.lesson}"

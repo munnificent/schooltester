@@ -1,8 +1,11 @@
-# backend/system_settings/urls.py
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import FAQViewSet, PricingPlanViewSet
 
-from django.urls import path
-from .views import SystemSettingsView
+router = DefaultRouter()
+router.register(r'faqs', FAQViewSet, basename='faq')
+router.register(r'pricing-plans', PricingPlanViewSet, basename='pricing-plan')
 
 urlpatterns = [
-    path('', SystemSettingsView.as_view(), name='system-settings'),
+    path('', include(router.urls)),
 ]
