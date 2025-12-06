@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 import apiClient from '../api/apiClient';
-import { Course, Lesson, LessonStatus } from '../types';
+import { Course, Lesson } from '../types';
 
 // --- Тип для полных данных курса ---
 type FullCourseData = Course & {
@@ -57,15 +57,6 @@ const LessonItem: React.FC<{
   index: number;
   onToggleCompletion: (lessonId: number) => void;
 }> = React.memo(({ lesson, index, onToggleCompletion }) => {
-  const statusMap: { [key in LessonStatus]: { color: string, label: string } } = {
-    completed: { color: 'text-success', label: 'Пройден' },
-    planned: { color: 'text-primary', label: 'Запланирован' },
-    cancelled: { color: 'text-destructive', label: 'Отменен' },
-  };
-  const status = lesson.status || 'planned';
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _statusConfig = statusMap[status]; // Used for validation
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

@@ -8,17 +8,6 @@ import { useDebounce } from '../hooks/useDebounce';
 import { Application, ApplicationStatus, PaginatedResponse } from '../types';
 import { DataTable, ColumnDef } from '../components/admin/DataTable';
 
-// --- Компоненты UI для таблицы ---
-
-const getStatusConfig = (status: ApplicationStatus) => {
-    const statusStyle: Record<ApplicationStatus, { text: string; className: string; icon: React.ElementType }> = {
-        new: { text: 'Новая', className: 'bg-blue-100 text-blue-800', icon: Inbox },
-        in_progress: { text: 'В работе', className: 'bg-amber-100 text-amber-800', icon: Clock },
-        closed: { text: 'Оформлен', className: 'bg-emerald-100 text-emerald-800', icon: Check },
-    };
-    return statusStyle[status] || { text: 'Неизвестно', className: 'bg-gray-100 text-gray-800', icon: Inbox };
-};
-
 // --- Основной компонент страницы ---
 
 const AdminRequestsPage: React.FC = () => {

@@ -73,9 +73,31 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = tokenService.getAccess();
+      if (!token) {
+        // Delay state update to next tick to avoid synchronous setState warning
+        await Promise.resolve();
+        setAuthState({ isAuthenticated: false, user: null, isLoading: false });
+        return;
+      }
+      setAuthorizationHeader(token);
+      try {
+        const { data } = await apiClient.get<User>('/users/me/');
+        setAuthState({ isAuthenticated: true, user: data, isLoading: false });
+      } catch (error) {
+        console.error("Не удалось получить пользователя по токену.", error);
+        // logout() будет вызван автоматически перехватчиком in apiClient
+      }
+    };
+    fetchUser();
+  }, []);
+
   const fetchUser = useCallback(async () => {
     const token = tokenService.getAccess();
     if (!token) {
+      await Promise.resolve();
       setAuthState({ isAuthenticated: false, user: null, isLoading: false });
       return;
     }
@@ -85,13 +107,8 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
       setAuthState({ isAuthenticated: true, user: data, isLoading: false });
     } catch (error) {
       console.error("Не удалось получить пользователя по токену.", error);
-      // logout() будет вызван автоматически перехватчиком в apiClient
     }
   }, []);
-
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
 
 const login = async (email: string, password: string): Promise<User> => {
   try {

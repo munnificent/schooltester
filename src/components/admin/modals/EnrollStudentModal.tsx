@@ -35,7 +35,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({ isOpen, 
 
       setAllCourses(coursesResponse.data.results || []);
 
-      // Backend should return enrolledCourses in profile
+      // Note: Backend returns enrolledCourses in profile - access it with optional chaining
       const enrolledIds = new Set<number>(studentResponse.data.profile?.enrolledCourses?.map((c: Course) => c.id) || []);
       setSelectedCourseIds(enrolledIds);
       setInitialSelectedIds(enrolledIds); // Сохраняем начальное состояние для сравнения

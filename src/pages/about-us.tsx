@@ -147,9 +147,6 @@ const CtaSection: React.FC<{ onOpenModal: () => void }> = ({ onOpenModal }) => (
 
 // --- Основной компонент страницы ---
 const AboutUsPage: React.FC = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
     return (
         <main>
             <HeroSection />
@@ -157,7 +154,7 @@ const AboutUsPage: React.FC = () => {
             <StatsSection />
             <ValuesSection />
             <TeamSection />
-            <CtaSection onOpenModal={() => setIsModalOpen(true)} />
+            <CtaSection onOpenModal={() => {/* TODO: Implement modal */}} />
             
             {/* TODO: Модальное окно нужно будет вынести в переиспользуемый компонент */}
             {/* <RequestFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> */}
