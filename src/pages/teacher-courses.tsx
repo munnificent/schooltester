@@ -18,7 +18,7 @@ const TeacherCoursesPage: React.FC = () => {
     try {
       const response = await apiClient.get<Course[]>('/courses/my-teaching/');
       setCourses(response.data);
-    } catch (err) {
+    } catch {
       setError('Не удалось загрузить курсы.');
     } finally {
       setIsLoading(false);

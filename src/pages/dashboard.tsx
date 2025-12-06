@@ -161,7 +161,7 @@ const StudentDashboard: React.FC = () => {
     try {
       const response = await apiClient.get<DashboardData>('/student-dashboard-summary/');
       setData(response.data);
-    } catch (err) {
+    } catch {
       setError("Произошла ошибка при запросе к серверу.");
     } finally {
       setIsLoading(false);

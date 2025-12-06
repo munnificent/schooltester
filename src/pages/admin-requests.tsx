@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Search, ChevronDown, Check, Clock, Archive, Inbox } from 'lucide-react';
+import { Search, Check, Clock, Inbox } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import apiClient from '../api/apiClient';
@@ -10,14 +10,17 @@ import { DataTable, ColumnDef } from '../components/admin/DataTable';
 
 // --- Компоненты UI для таблицы ---
 
-const StatusChip: React.FC<{ status: ApplicationStatus }> = ({ status }) => {
+const getStatusConfig = (status: ApplicationStatus) => {
     const statusStyle: Record<ApplicationStatus, { text: string; className: string; icon: React.ElementType }> = {
         new: { text: 'Новая', className: 'bg-blue-100 text-blue-800', icon: Inbox },
         in_progress: { text: 'В работе', className: 'bg-amber-100 text-amber-800', icon: Clock },
         closed: { text: 'Оформлен', className: 'bg-emerald-100 text-emerald-800', icon: Check },
-        // archived: { text: 'В архиве', className: 'bg-gray-100 text-gray-800', icon: Archive },
     };
-    const { text, className, icon: Icon } = statusStyle[status] || { text: 'Неизвестно', className: 'bg-gray-100 text-gray-800', icon: Inbox };
+    return statusStyle[status] || { text: 'Неизвестно', className: 'bg-gray-100 text-gray-800', icon: Inbox };
+};
+
+const StatusChip: React.FC<{ status: ApplicationStatus }> = ({ status }) => {
+    const { text, className, icon: Icon } = getStatusConfig(status);
     return (
         <span className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded-full ${className}`}>
             <Icon size={14} /> {text}
@@ -41,7 +44,7 @@ const AdminRequestsPage: React.FC = () => {
             const params = { search: debouncedSearch, status: statusFilter === 'all' ? '' : statusFilter };
             const response = await apiClient.get<PaginatedResponse<Application>>('/applications/', { params });
             setApplications(response.data.results);
-        } catch (error) {
+        } catch {
             toast.error("Не удалось загрузить заявки");
             setApplications([]);
         } finally {
@@ -51,7 +54,7 @@ const AdminRequestsPage: React.FC = () => {
 
     useEffect(() => { fetchApplications(); }, [fetchApplications]);
 
-    const handleStatusChange = async (id: number, newStatus: ApplicationStatus) => {
+    const handleStatusChange = useCallback(async (id: number, newStatus: ApplicationStatus) => {
         const originalApplications = [...applications];
         // Оптимистичное обновление UI
         setApplications(prev => prev.map(app => app.id === id ? { ...app, status: newStatus } : app));
@@ -59,11 +62,11 @@ const AdminRequestsPage: React.FC = () => {
         try {
             await apiClient.patch(`/applications/${id}/`, { status: newStatus });
             toast.success("Статус заявки обновлен");
-        } catch (error) {
+        } catch {
             toast.error("Не удалось обновить статус");
             setApplications(originalApplications); // Возвращаем исходное состояние в случае ошибки
         }
-    };
+    }, [applications]);
 
     const columns = useMemo<ColumnDef<Application>[]>(() => [
         {

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  BookOpen, Users, Award, CheckCircle, ArrowRight,
-  Star, Play, Menu, BrainCircuit, Phone
+  BookOpen, Users, Award, ArrowRight,
+  Star, BrainCircuit, Phone
 } from 'lucide-react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import toast from 'react-hot-toast';
 import { RequestFormModal } from '../components/modals/request-form-modal';
 import apiClient from '../api/apiClient';
 import { TeacherPublic, ReviewPublic, PaginatedResponse } from '../types';
@@ -206,12 +204,6 @@ const CalculatorSection: React.FC<{ onApplyClick: () => void }> = ({ onApplyClic
     </div>
   </SectionWrapper>
 );
-
-
-// --- Modal Window ---
-type ApplyFormInputs = { name: string; phone: string; };
-
-
 
 
 // --- Main Page Component ---

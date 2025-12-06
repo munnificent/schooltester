@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, Plus, Search } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Plus, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import apiClient from '../api/apiClient';
@@ -40,7 +40,6 @@ function AdminUsersPage() {
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRole, setSelectedRole] = useState<string>('all');
-    const [isDeleting, setIsDeleting] = useState(false);
 
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -189,10 +188,9 @@ function AdminUsersPage() {
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={confirmDelete}
                 itemName={selectedUser?.email || ''}
-                isDeleting={isDeleting}
             />
         </motion.div>
     );
-};
+}
 
 export default AdminUsersPage;

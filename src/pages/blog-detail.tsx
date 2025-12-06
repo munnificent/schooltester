@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button, Chip, Divider, Avatar } from '@heroui/react';
-import { motion } from 'framer-motion';
+
 import { Icon } from '@iconify/react';
 import { Link as RouteLink, useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/header';

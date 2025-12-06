@@ -35,7 +35,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({ isOpen, 
 
       setAllCourses(coursesResponse.data.results || []);
 
-      // @ts-ignore - Бэкенд должен возвращать `enrolledCourses` в профиле
+      // @ts-expect-error - Бэкенд должен возвращать `enrolledCourses` в профиле
       const enrolledIds = new Set<number>(studentResponse.data.profile?.enrolledCourses?.map((c: Course) => c.id) || []);
       setSelectedCourseIds(enrolledIds);
       setInitialSelectedIds(enrolledIds); // Сохраняем начальное состояние для сравнения

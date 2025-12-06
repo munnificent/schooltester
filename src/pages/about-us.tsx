@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Lightbulb, Shield, Award, Users, BookOpen, GraduationCap } from 'lucide-react';
 // import { RequestFormModal } from '../components/modals/RequestFormModal'; // TODO: Создать этот компонент
@@ -148,6 +147,7 @@ const CtaSection: React.FC<{ onOpenModal: () => void }> = ({ onOpenModal }) => (
 
 // --- Основной компонент страницы ---
 const AboutUsPage: React.FC = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (

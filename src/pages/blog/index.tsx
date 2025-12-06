@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, ArrowRight, Rss, BookText, AlertCircle } from 'lucide-react';
+import { Search, AlertCircle } from 'lucide-react';
 
 import apiClient from '../../api/apiClient';
 import { useDebounce } from '../../hooks/useDebounce';

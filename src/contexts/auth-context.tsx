@@ -73,25 +73,24 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     }
   }, []);
 
-  const fetchUser = useCallback(async () => {
-    const token = tokenService.getAccess();
-    if (!token) {
-      setAuthState({ isAuthenticated: false, user: null, isLoading: false });
-      return;
-    }
-    setAuthorizationHeader(token);
-    try {
-      const { data } = await apiClient.get<User>('/users/me/');
-      setAuthState({ isAuthenticated: true, user: data, isLoading: false });
-    } catch (error) {
-      console.error("Не удалось получить пользователя по токену.", error);
-      // logout() будет вызван автоматически перехватчиком в apiClient
-    }
-  }, [logout]);
-
   useEffect(() => {
+    const fetchUser = async () => {
+      const token = tokenService.getAccess();
+      if (!token) {
+        setAuthState({ isAuthenticated: false, user: null, isLoading: false });
+        return;
+      }
+      setAuthorizationHeader(token);
+      try {
+        const { data } = await apiClient.get<User>('/users/me/');
+        setAuthState({ isAuthenticated: true, user: data, isLoading: false });
+      } catch (error) {
+        console.error("Не удалось получить пользователя по токену.", error);
+        // logout() будет вызван автоматически перехватчиком в apiClient
+      }
+    };
     fetchUser();
-  }, [fetchUser]);
+  }, []);
 
 const login = async (email: string, password: string): Promise<User> => {
   try {

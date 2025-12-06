@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 type LogLevel = 'info' | 'warn' | 'error';
 
 class Logger {
@@ -11,15 +12,12 @@ class Logger {
         if (this.isDev) {
             switch (level) {
                 case 'info':
-                    // eslint-disable-next-line no-console
                     console.log(`[INFO] ${message}`, ...args);
                     break;
                 case 'warn':
-                    // eslint-disable-next-line no-console
                     console.warn(`[WARN] ${message}`, ...args);
                     break;
                 case 'error':
-                    // eslint-disable-next-line no-console
                     console.error(`[ERROR] ${message}`, ...args);
                     break;
             }

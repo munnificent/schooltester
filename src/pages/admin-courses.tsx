@@ -36,7 +36,7 @@ const AdminCoursesPage: React.FC = () => {
             const params = { search: debouncedSearch };
             const response = await apiClient.get<PaginatedResponse<Course>>('/courses/', { params });
             setCourses(response.data.results);
-        } catch (error) {
+        } catch {
             toast.error("Не удалось загрузить курсы");
             setCourses([]);
         } finally {
@@ -70,7 +70,7 @@ const AdminCoursesPage: React.FC = () => {
     toast.success('Курс удален');
     fetchCourses(); 
     setIsDeleteModalOpen(false);
-  } catch (err) {
+  } catch {
     toast.error('Ошибка при удалении');
   } finally {
     setIsDeleting(false);

@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, CheckCircle, Download, Video,
-  AlertCircle, Calendar, Circle
+  AlertCircle, Circle
 } from 'lucide-react';
 
 import apiClient from '../api/apiClient';
@@ -152,7 +152,7 @@ const CourseDetailPage: React.FC = () => {
 
       setCourse({ ...response.data, progress });
 
-    } catch (err) {
+    } catch {
       setError("Возможно, курс не существует или у вас нет к нему доступа.");
     } finally {
       setIsLoading(false);
@@ -161,6 +161,7 @@ const CourseDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (courseId) fetchCourseData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId]);
 
   const handleToggleCompletion = async (lessonId: number) => {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Save, Loader2, FileText, FileSpreadsheet, Download, Trash2, AlertTriangle } from 'lucide-react';
+import { Save, Loader2, FileText, Download, Trash2, AlertTriangle } from 'lucide-react';
 
 import apiClient from '../api/apiClient';
 import { SystemSettings } from '../types';
@@ -63,7 +63,7 @@ const AdminSettingsPage: React.FC = () => {
             try {
                 const response = await apiClient.get<SystemSettings>('/system-settings/1/');
                 reset(response.data); // Заполняем форму данными с сервера
-            } catch (error) {
+            } catch {
                 toast.error("Не удалось загрузить настройки");
             } finally {
                 setIsLoading(false);
@@ -78,7 +78,7 @@ const AdminSettingsPage: React.FC = () => {
             await apiClient.patch('/system-settings/1/', data);
             toast.success("Настройки успешно сохранены", { id: toastId });
             reset(data); // Обновляем "чистое" состояние формы
-        } catch (error) {
+        } catch {
             toast.error("Не удалось сохранить настройки", { id: toastId });
         }
     };

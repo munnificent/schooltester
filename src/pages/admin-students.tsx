@@ -32,7 +32,7 @@ const AdminStudentsPage: React.FC = () => {
       const params = { search: debouncedSearch, role: 'student' };
       const response = await apiClient.get<PaginatedResponse<User>>('/users/', { params });
       setStudents(response.data.results);
-    } catch (error) {
+    } catch {
       toast.error('Не удалось загрузить список учеников');
       setStudents([]);
     } finally {
@@ -68,7 +68,7 @@ const AdminStudentsPage: React.FC = () => {
       toast.success(`Ученик ${selectedStudent.email} удален`, { id: toastId });
       fetchStudents();
       setIsDeleteModalOpen(false);
-    } catch (error) {
+    } catch {
       toast.error('Не удалось удалить ученика.', { id: toastId });
     } finally {
       setIsDeleting(false);

@@ -200,7 +200,7 @@ const TestScreen: React.FC<{ state: State; dispatch: React.Dispatch<Action> }> =
 };
 
 const ResultsScreen: React.FC<{ state: State; dispatch: React.Dispatch<Action> }> = ({ state, dispatch }) => {
-  const { result, testDetails } = state;
+  const { result } = state;
   const navigate = useNavigate();
   const percentage = result.total > 0 ? Math.round((result.correct / result.total) * 100) : 0;
 

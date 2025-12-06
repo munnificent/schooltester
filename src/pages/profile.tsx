@@ -103,7 +103,7 @@ const UserProfileCard: React.FC<{ user: UserType, onAvatarChange: () => void }> 
       });
       toast.success('Аватар успешно обновлен!', { id: toastId });
       onAvatarChange();
-    } catch (error) {
+    } catch {
       toast.error('Ошибка при загрузке аватара.', { id: toastId });
     } finally {
       setIsUploading(false);
@@ -148,7 +148,7 @@ const UserProfileCard: React.FC<{ user: UserType, onAvatarChange: () => void }> 
 
 const PersonalDataForm: React.FC<{ currentUser: UserType, onUpdate: () => void }> = ({ currentUser, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const { register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm<ProfileFormInputs>({
+  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<ProfileFormInputs>({
     defaultValues: {
       firstName: currentUser.firstName,
       lastName: currentUser.lastName,
@@ -227,7 +227,7 @@ const PersonalDataForm: React.FC<{ currentUser: UserType, onUpdate: () => void }
 };
 
 const SecurityForm = () => {
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<PasswordFormInputs>();
+  const { register, handleSubmit, formState: { isSubmitting }, reset } = useForm<PasswordFormInputs>();
 
   const onSubmit: SubmitHandler<PasswordFormInputs> = async (data) => {
     if (data.newPassword !== data.newPasswordConfirm) {

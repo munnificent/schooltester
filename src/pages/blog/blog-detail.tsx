@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, User, Calendar, Tag, ChevronRight, AlertCircle, Phone } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { ArrowLeft, User, Calendar, ChevronRight, AlertCircle } from 'lucide-react';
 
 import apiClient from '../../api/apiClient';
 import { BlogPost, PaginatedResponse } from '../../types';
@@ -108,7 +107,7 @@ const BlogDetailPage: React.FC = () => {
                     });
                     setRelatedPosts(relatedResponse.data.results);
                 }
-            } catch (err) {
+            } catch {
                 setError("Статья не найдена или произошла ошибка.");
             } finally {
                 setIsLoading(false);

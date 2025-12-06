@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Users, UserCheck, BookOpen, FileText, ArrowRight, Inbox } from 'lucide-react';
 
 import apiClient from '../api/apiClient';
-import { Application, ApplicationStatus, PaginatedResponse } from '../types';
+import { Application, ApplicationStatus } from '../types';
 
 // --- Типы для данных дашборда ---
 interface DashboardStats {
@@ -109,17 +109,15 @@ const RecentApplications: React.FC<{ applications: Application[]; isLoading: boo
 const AdminDashboard: React.FC = () => {
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            setError(null);
             try {
                 const response = await apiClient.get<DashboardData>('/admin-dashboard-summary/');
                 setData(response.data);
-            } catch (err) {
-                setError("Не удалось загрузить данные для панели управления.");
+            } catch {
+                // Error is handled by displaying empty state
             } finally {
                 setIsLoading(false);
             }
