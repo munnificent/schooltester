@@ -115,7 +115,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, o
              <FormInput name="password" label="Пароль" type="password" control={control} error={errors.password} rules={{ required: 'Пароль обязателен', minLength: { value: 8, message: 'Минимум 8 символов' } }} />
           )}
 
-          <FormInput name="phone" label="Телефон" type="tel" control={control} />
+          <FormInput name="phone" label="Телефон" type="tel" control={control} error={errors.phone} />
           <FormSelect name="role" label="Роль" control={control} error={errors.role} rules={{ required: 'Это поле обязательно' }}>
             <option value="student">Ученик</option>
             <option value="teacher">Преподаватель</option>

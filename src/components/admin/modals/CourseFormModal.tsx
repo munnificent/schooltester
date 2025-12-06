@@ -39,7 +39,7 @@ export const CourseFormModal: React.FC<CourseFormModalProps> = ({ isOpen, onClos
       try {
         const response = await apiClient.get<PaginatedResponse<User>>('/users/', { params: { role: 'teacher' } });
         setTeachers(response.data.results);
-      } catch (error) {
+      } catch {
         toast.error('Не удалось загрузить список преподавателей.');
       } finally {
         setIsLoadingTeachers(false);

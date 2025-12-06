@@ -87,7 +87,7 @@ const AdminStudentsPage: React.FC = () => {
       cell: (user) => (
         <div className="flex items-center gap-3">
           <img
-            src={user.avatar || `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}`}
+            src={user.profile?.avatar || `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}`}
             alt="avatar"
             className="h-9 w-9 rounded-full"
           />

@@ -19,15 +19,6 @@ const getStatusConfig = (status: ApplicationStatus) => {
     return statusStyle[status] || { text: 'Неизвестно', className: 'bg-gray-100 text-gray-800', icon: Inbox };
 };
 
-const StatusChip: React.FC<{ status: ApplicationStatus }> = ({ status }) => {
-    const { text, className, icon: Icon } = getStatusConfig(status);
-    return (
-        <span className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded-full ${className}`}>
-            <Icon size={14} /> {text}
-        </span>
-    );
-};
-
 // --- Основной компонент страницы ---
 
 const AdminRequestsPage: React.FC = () => {
@@ -106,7 +97,7 @@ const AdminRequestsPage: React.FC = () => {
                 </select>
             )
         },
-    ], []);
+    ], [handleStatusChange]);
 
     const statusOptions = [
         { key: 'all', label: 'Все статусы' },
@@ -143,10 +134,6 @@ const AdminRequestsPage: React.FC = () => {
                     columns={columns}
                     data={applications}
                     isLoading={isLoading}
-                    // Убираем действия, так как они теперь внутри колонки статуса
-                    onEdit={() => {}} 
-                    onDelete={() => {}}
-                    hideActionsColumn={true}
                 />
             </div>
         </motion.div>

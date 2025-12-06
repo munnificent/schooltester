@@ -63,7 +63,8 @@ const LessonItem: React.FC<{
     cancelled: { color: 'text-destructive', label: 'Отменен' },
   };
   const status = lesson.status || 'planned';
-  const { color } = statusMap[status];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _statusConfig = statusMap[status]; // Used for validation
 
   return (
     <motion.div

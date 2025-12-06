@@ -13,7 +13,7 @@ const PostSidebar: React.FC<{ post: BlogPost; relatedPosts: BlogPost[] }> = ({ p
         {/* Author Card */}
         <div className="bg-card border rounded-lg p-5 text-center">
             <img 
-                src={post.author.avatar || `https://ui-avatars.com/api/?name=${post.author.firstName}+${post.author.lastName}`}
+                src={post.author.profile?.avatar || `https://ui-avatars.com/api/?name=${post.author.firstName}+${post.author.lastName}`}
                 alt={post.author.firstName}
                 className="w-20 h-20 rounded-full mx-auto mb-4"
             />

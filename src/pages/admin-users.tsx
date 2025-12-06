@@ -44,6 +44,7 @@ function AdminUsersPage() {
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const debouncedSearch = useDebounce(searchQuery, 400);
 
@@ -54,7 +55,7 @@ function AdminUsersPage() {
             const params = { search: debouncedSearch, role: selectedRole === 'all' ? '' : selectedRole, ordering: '-created_at' };
             const response = await apiClient.get<PaginatedResponse<User>>('/users/', { params });
             setUsers(response.data.results);
-        } catch (error) {
+        } catch {
             setError("Не удалось загрузить пользователей");
             setUsers([]);
         } finally {
@@ -83,14 +84,17 @@ function AdminUsersPage() {
 
     const confirmDelete = async () => {
         if (!selectedUser) return;
+        setIsDeleting(true);
         const toastId = toast.loading('Удаление пользователя...');
         try {
             await apiClient.delete(`/users/${selectedUser.id}/`);
             toast.success(`Пользователь ${selectedUser.email} удалён.`, { id: toastId });
             fetchUsers();
             setIsDeleteModalOpen(false);
-        } catch (error) {
+        } catch {
             toast.error("Не удалось удалить пользователя.", { id: toastId });
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -188,6 +192,7 @@ function AdminUsersPage() {
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={confirmDelete}
                 itemName={selectedUser?.email || ''}
+                isDeleting={isDeleting}
             />
         </motion.div>
     );

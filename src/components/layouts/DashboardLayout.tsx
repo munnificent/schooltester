@@ -117,7 +117,7 @@ const DashboardHeader: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick })
             <p className="text-xs text-muted-foreground">{user?.email}</p>
           </div>
           <img
-            src={user?.avatar || `https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}`}
+            src={user?.profile?.avatar || `https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}`}
             alt="avatar"
             className="w-10 h-10 rounded-full"
           />

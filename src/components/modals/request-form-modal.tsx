@@ -42,7 +42,7 @@ export const RequestFormModal: React.FC<{ isOpen: boolean; onClose: () => void }
             toast.success('Заявка успешно отправлена!', { id: toastId });
             reset();
             onClose();
-        } catch (error) {
+        } catch {
             toast.error('Не удалось отправить заявку.', { id: toastId });
         }
     };

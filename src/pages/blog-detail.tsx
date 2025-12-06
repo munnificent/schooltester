@@ -7,7 +7,7 @@ import { Icon } from '@iconify/react';
 import { Link as RouteLink, useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/header';
 import Footer from '../components/footer';
-import RequestFormModal from '../components/request-form-modal';
+import { RequestFormModal } from '../components/modals/request-form-modal';
 
 const BlogDetail: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -84,7 +84,7 @@ const BlogDetail: React.FC = () => {
   
   return (
     <>
-      <Header onOpenModal={() => setIsModalOpen(true)} />
+      <Header onApplyClick={() => setIsModalOpen(true)} />
       
       <main className="bg-background">
         <div className="relative w-full h-80 md:h-96 overflow-hidden">
@@ -206,7 +206,7 @@ const BlogDetail: React.FC = () => {
       
       <RequestFormModal 
         isOpen={isModalOpen} 
-        onOpenChange={setIsModalOpen}
+        onClose={() => setIsModalOpen(false)}
       />
     </>
   );

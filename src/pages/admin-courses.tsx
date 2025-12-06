@@ -90,7 +90,7 @@ const AdminCoursesPage: React.FC = () => {
             cell: (course) => (
                 course.teacher ? (
                     <div className="flex items-center gap-3">
-                        <img src={course.teacher.avatar || `https://ui-avatars.com/api/?name=${course.teacher.firstName}+${course.teacher.lastName}`} alt="avatar" className="h-9 w-9 rounded-full"/>
+                        <img src={course.teacher.profile?.avatar || `https://ui-avatars.com/api/?name=${course.teacher.firstName}+${course.teacher.lastName}`} alt="avatar" className="h-9 w-9 rounded-full"/>
                         <p className="font-medium text-foreground">{course.teacher.firstName} {course.teacher.lastName}</p>
                     </div>
                 ) : <span className="text-muted-foreground">Не назначен</span>

@@ -35,12 +35,12 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({ isOpen, 
 
       setAllCourses(coursesResponse.data.results || []);
 
-      // @ts-expect-error - Бэкенд должен возвращать `enrolledCourses` в профиле
+      // Backend should return enrolledCourses in profile
       const enrolledIds = new Set<number>(studentResponse.data.profile?.enrolledCourses?.map((c: Course) => c.id) || []);
       setSelectedCourseIds(enrolledIds);
       setInitialSelectedIds(enrolledIds); // Сохраняем начальное состояние для сравнения
 
-    } catch (error) {
+    } catch {
       toast.error("Не удалось загрузить данные.");
     } finally {
       setIsLoading(false);
@@ -67,7 +67,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({ isOpen, 
       });
       toast.success('Запись на курсы успешно обновлена!', { id: toastId });
       onClose();
-    } catch (error) {
+    } catch {
       toast.error('Не удалось сохранить изменения.', { id: toastId });
     } finally {
       setIsSaving(false);
